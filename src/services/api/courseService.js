@@ -203,8 +203,6 @@ async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
     // Calculate new progress percentage
     const totalLessons = course.lessons?.length || 0
     progress.progressPercentage = await progressService.calculateCourseProgress(userId, courseId, totalLessons)
-    
-    return progress
 return progress
   },
 
@@ -228,14 +226,16 @@ return progress
     return await progressService.unenrollUser(userId, courseId)
   },
 
-  async checkEnrollment(courseId, userId = 1) {
+async checkEnrollment(courseId, userId = 1) {
     await delay(200)
     return await progressService.isEnrolled(userId, courseId)
-return await progressService.isEnrolled(userId, courseId)
   },
 
-  async getCourseEnrollments(userId = 1) {
+async getCourseEnrollments(userId = 1) {
     await delay(350)
+    
+    // Get enrolled course IDs from progressService
+    const enrolledCourseIds = await progressService.getEnrolledCourseIds(userId) || []
     const enrolledCourses = coursesData.filter(course => enrolledCourseIds.includes(course.Id))
     
     // Get progress data for enrolled courses
@@ -247,7 +247,7 @@ return await progressService.isEnrolled(userId, courseId)
         ...course,
         progress: progress ? progress.progressPercentage : 0,
         lastAccessed: progress ? progress.lastAccessed : new Date(),
-completedLessons: progress ? progress.completedLessons.length : 0,
+        completedLessons: progress ? progress.completedLessons.length : 0,
         progressData: progress
       }
     })
