@@ -205,7 +205,7 @@ function VideoPlayer({ lessonTitle = "Educational Video", className = "" }) {
 
       {/* Controls */}
       <div
-        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${
+className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 sm:p-3 lg:p-4 transition-opacity duration-300 ${
           showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
         }`}
         onMouseEnter={() => setShowControls(true)}
@@ -224,25 +224,27 @@ function VideoPlayer({ lessonTitle = "Educational Video", className = "" }) {
 
         {/* Control Buttons */}
         <div className="flex items-center justify-between text-white">
-          <div className="flex items-center space-x-3">
-            {/* Play/Pause */}
-            <button
-              onClick={togglePlay}
-              className="flex items-center justify-center w-10 h-10 hover:bg-white/20 rounded-full transition-colors"
-            >
-              <ApperIcon name={isPlaying ? "Pause" : "Play"} size={20} />
-            </button>
+<div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              {/* Play/Pause */}
+              <button
+                onClick={togglePlay}
+                className="flex items-center justify-center min-w-[44px] min-h-[44px] w-10 h-10 sm:w-12 sm:h-12 hover:bg-white/20 rounded-full transition-colors"
+              >
+                <ApperIcon name={isPlaying ? "Pause" : "Play"} size={20} />
+              </button>
 
-            {/* Time Display */}
-            <span className="text-sm font-medium">
-              {formatTime(currentTime)} / {formatTime(duration)}
-            </span>
+              {/* Time Display */}
+              <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </span>
+            </div>
 
-            {/* Volume Control */}
-            <div className="flex items-center space-x-2">
+            {/* Volume Control - Hidden on small screens */}
+            <div className="hidden sm:flex items-center space-x-2">
               <button
                 onClick={toggleMute}
-                className="flex items-center justify-center w-8 h-8 hover:bg-white/20 rounded-full transition-colors"
+                className="flex items-center justify-center min-w-[44px] min-h-[44px] w-8 h-8 hover:bg-white/20 rounded-full transition-colors"
               >
                 <ApperIcon 
                   name={isMuted ? "VolumeX" : volume > 0.5 ? "Volume2" : "Volume1"} 
@@ -256,17 +258,17 @@ function VideoPlayer({ lessonTitle = "Educational Video", className = "" }) {
                 step="0.1"
                 value={isMuted ? 0 : volume}
                 onChange={handleVolumeChange}
-                className="w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
+                className="w-16 lg:w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider"
               />
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between sm:justify-end space-x-2">
             {/* Video Selection */}
             <select
               value={currentVideoIndex}
               onChange={(e) => changeVideo(parseInt(e.target.value))}
-              className="bg-black/50 text-white text-sm rounded px-2 py-1 border border-white/20"
+              className="bg-black/50 text-white text-xs sm:text-sm rounded px-2 py-1 border border-white/20 max-w-[140px] sm:max-w-none truncate"
             >
               {SAMPLE_VIDEOS.map((video, index) => (
                 <option key={index} value={index} className="bg-black">
@@ -275,10 +277,21 @@ function VideoPlayer({ lessonTitle = "Educational Video", className = "" }) {
               ))}
             </select>
 
+            {/* Volume Control - Mobile only */}
+            <button
+              onClick={toggleMute}
+              className="sm:hidden flex items-center justify-center min-w-[44px] min-h-[44px] w-10 h-10 hover:bg-white/20 rounded-full transition-colors"
+            >
+              <ApperIcon 
+                name={isMuted ? "VolumeX" : volume > 0.5 ? "Volume2" : "Volume1"} 
+                size={18} 
+              />
+            </button>
+
             {/* Fullscreen */}
             <button
               onClick={toggleFullscreen}
-              className="flex items-center justify-center w-8 h-8 hover:bg-white/20 rounded-full transition-colors"
+              className="flex items-center justify-center min-w-[44px] min-h-[44px] w-10 h-10 hover:bg-white/20 rounded-full transition-colors"
             >
               <ApperIcon name={isFullscreen ? "Minimize" : "Maximize"} size={16} />
             </button>
@@ -287,9 +300,9 @@ function VideoPlayer({ lessonTitle = "Educational Video", className = "" }) {
       </div>
 
       {/* Video Title */}
-      <div className="absolute top-4 left-4 right-4">
-        <div className="bg-black/50 backdrop-blur-sm rounded-lg px-3 py-2 text-white">
-          <h3 className="font-medium text-sm">{currentVideo.title}</h3>
+<div className="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-4">
+        <div className="bg-black/50 backdrop-blur-sm rounded-lg px-2 py-1 sm:px-3 sm:py-2 text-white">
+          <h3 className="font-medium text-xs sm:text-sm truncate">{currentVideo.title}</h3>
         </div>
       </div>
     </div>

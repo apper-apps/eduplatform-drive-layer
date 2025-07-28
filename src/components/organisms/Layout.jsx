@@ -35,7 +35,7 @@ const Layout = ({ children }) => {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           <Header />
-          <main className="p-6">
+<main className="p-3 sm:p-4 md:p-6">
             {children}
           </main>
         </div>

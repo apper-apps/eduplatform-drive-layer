@@ -58,10 +58,10 @@ const CourseCard = ({ course, className, progress = null }) => {
     return iconMap[category] || "BookOpen"
   }
   return (
-    <Link 
+<Link 
       to={`/course/${course.Id}`}
       className={cn(
-        "group block bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden",
+        "group block bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 lg:hover:-translate-y-2 overflow-hidden w-full",
         className
       )}
     >
@@ -102,12 +102,12 @@ const CourseCard = ({ course, className, progress = null }) => {
             </div>
           </div>
         )}
-<div className="absolute top-4 right-4 flex items-center space-x-2">
+<div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center space-x-2">
           <button
             onClick={handleBookmarkToggle}
             disabled={bookmarkLoading}
             className={cn(
-              "p-2 rounded-full transition-all duration-200 hover:scale-110",
+              "p-2 sm:p-2.5 rounded-full transition-all duration-200 hover:scale-110 min-h-[44px] min-w-[44px] flex items-center justify-center",
               "bg-white/90 hover:bg-white shadow-lg hover:shadow-xl",
               bookmarkLoading && "opacity-50 cursor-not-allowed"
             )}
@@ -115,7 +115,7 @@ const CourseCard = ({ course, className, progress = null }) => {
           >
             <ApperIcon 
               name="Heart" 
-              size={20} 
+              size={18} 
               className={cn(
                 "transition-all duration-200",
                 isBookmarked 
@@ -124,13 +124,13 @@ const CourseCard = ({ course, className, progress = null }) => {
               )}
             />
           </button>
-          <Badge variant={difficultyColors[course.difficulty] || "default"}>
+          <Badge variant={difficultyColors[course.difficulty] || "default"} className="text-xs sm:text-sm">
             {course.difficulty}
           </Badge>
         </div>
       </div>
       
-      <div className="p-6">
+<div className="p-4 sm:p-5 lg:p-6">
         <h3 className="font-display font-semibold text-xl text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
           {course.title}
         </h3>
@@ -155,30 +155,30 @@ const CourseCard = ({ course, className, progress = null }) => {
             {course.category}
           </Badge>
         </div>
-        <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-sm text-gray-500 mb-4">
           <div className="flex items-center">
-            <ApperIcon name="User" size={16} className="mr-1" />
-            <span>{course.instructor}</span>
+            <ApperIcon name="User" size={16} className="mr-2 flex-shrink-0" />
+            <span className="truncate">{course.instructor}</span>
           </div>
           <div className="flex items-center">
-            <ApperIcon name="Clock" size={16} className="mr-1" />
+            <ApperIcon name="Clock" size={16} className="mr-2 flex-shrink-0" />
             <span>{course.duration}</span>
           </div>
         </div>
         
 <div className="space-y-3">
-          <div className="flex items-center justify-between">
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
             <div className="flex items-center text-sm text-gray-500">
-              <ApperIcon name="BookOpen" size={16} className="mr-1" />
+              <ApperIcon name="BookOpen" size={16} className="mr-2 flex-shrink-0" />
               <span>{course.lessons?.length || 0} lessons</span>
             </div>
             
-            <div className="flex items-center text-primary-600 group-hover:text-primary-700 font-medium">
-              <span className="mr-1">View Course</span>
+            <div className="flex items-center justify-center sm:justify-start text-primary-600 group-hover:text-primary-700 font-medium min-h-[44px] text-sm sm:text-base">
+              <span className="mr-2">View Course</span>
               <ApperIcon 
                 name="ArrowRight" 
                 size={16} 
-                className="group-hover:translate-x-1 transition-transform duration-200"
+                className="group-hover:translate-x-1 transition-transform duration-200 flex-shrink-0"
               />
             </div>
           </div>
