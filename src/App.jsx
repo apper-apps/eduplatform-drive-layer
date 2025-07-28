@@ -1,4 +1,4 @@
-import { Route, Router, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "@/index.css";
@@ -14,8 +14,8 @@ function App() {
 const handleSearch = (term) => {
     setSearchTerm(term);
   };
-  return (
-    <Router>
+return (
+    <BrowserRouter>
       <div className="App">
         <Layout searchTerm={searchTerm} onSearch={handleSearch}>
           <Routes>
@@ -41,7 +41,7 @@ const handleSearch = (term) => {
           theme="light"
         />
       </div>
-</Router>
+    </BrowserRouter>
   );
 }
 
