@@ -25,12 +25,12 @@ const CourseCard = ({ course, className, progress = null }) => {
 
   // Fallback placeholder based on course category
   const getCategoryIcon = (category) => {
-    const iconMap = {
-      "Technology": "Code",
-      "Business": "TrendingUp",
+const iconMap = {
+      "Programming": "Code",
+      "Business": "Briefcase",
       "Design": "Palette", 
       "Arts": "Camera",
-      "Science": "Microscope"
+      "Science": "Atom"
     }
     return iconMap[category] || "BookOpen"
   }
@@ -91,11 +91,17 @@ const CourseCard = ({ course, className, progress = null }) => {
         <h3 className="font-display font-semibold text-xl text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
           {course.title}
         </h3>
-        
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+<p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {course.description}
         </p>
         
+        {/* Category Badge */}
+        <div className="flex items-center gap-2 mb-4">
+          <Badge variant="secondary" className="flex items-center gap-1">
+            <ApperIcon name={getCategoryIcon(course.category)} size={12} />
+            {course.category}
+          </Badge>
+        </div>
         <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
           <div className="flex items-center">
             <ApperIcon name="User" size={16} className="mr-1" />

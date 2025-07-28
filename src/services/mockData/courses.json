@@ -6,7 +6,7 @@
     "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop",
     "instructor": "Sarah Johnson",
     "duration": "8 hours",
-    "category": "Technology",
+    "category": "Programming",
     "difficulty": "Beginner",
     "lessons": [
       {
@@ -121,7 +121,7 @@
   },
   {
     "Id": 3,
-"title": "UX/UI Design Principles",
+    "title": "UX/UI Design Principles",
     "description": "Learn essential user experience and interface design principles to create intuitive and beautiful digital products that users love.",
     "thumbnail": "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=400&h=300&fit=crop",
     "instructor": "Emily Rodriguez",
@@ -186,7 +186,7 @@
     "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
     "instructor": "Dr. James Wilson",
     "duration": "15 hours",
-    "category": "Technology",
+    "category": "Programming",
     "difficulty": "Advanced",
     "lessons": [
       {
@@ -241,59 +241,59 @@
   },
   {
     "Id": 5,
-    "title": "Photography Masterclass",
-    "description": "From camera basics to advanced composition techniques, learn everything you need to capture stunning photographs in any situation.",
-    "thumbnail": "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400&h=300&fit=crop",
-    "instructor": "Alex Thompson",
-    "duration": "9 hours",
-    "category": "Arts",
-    "difficulty": "Intermediate",
+    "title": "Introduction to Biology",
+    "description": "Explore the fascinating world of living organisms, from cellular processes to ecosystem interactions. Perfect for students beginning their journey in biological sciences.",
+    "thumbnail": "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&h=300&fit=crop",
+    "instructor": "Dr. Sarah Martinez",
+    "duration": "12 hours",
+    "category": "Science",
+    "difficulty": "Beginner",
     "lessons": [
       {
         "Id": 25,
-        "title": "Camera Fundamentals",
-        "content": "Understanding camera settings, exposure triangle, and shooting modes.",
-        "duration": "55 min",
+        "title": "Cell Structure and Function",
+        "content": "Understanding the basic building blocks of life and cellular processes.",
+        "duration": "75 min",
         "completed": false,
         "order": 1
       },
       {
         "Id": 26,
-        "title": "Composition Techniques",
-        "content": "Rule of thirds, leading lines, and other composition principles.",
-        "duration": "70 min",
+        "title": "Genetics and DNA",
+        "content": "Exploring heredity, DNA structure, and genetic inheritance patterns.",
+        "duration": "85 min",
         "completed": false,
         "order": 2
       },
       {
         "Id": 27,
-        "title": "Lighting and Exposure",
-        "content": "Working with natural and artificial light for perfect exposure.",
-        "duration": "80 min",
+        "title": "Evolution and Natural Selection",
+        "content": "Understanding how species evolve and adapt over time.",
+        "duration": "70 min",
         "completed": false,
         "order": 3
       },
       {
         "Id": 28,
-        "title": "Portrait Photography",
-        "content": "Techniques for capturing compelling portraits and working with subjects.",
-        "duration": "75 min",
+        "title": "Human Body Systems",
+        "content": "Overview of major organ systems and their functions.",
+        "duration": "90 min",
         "completed": false,
         "order": 4
       },
       {
         "Id": 29,
-        "title": "Landscape Photography",
-        "content": "Capturing stunning landscapes and outdoor scenes.",
-        "duration": "65 min",
+        "title": "Ecology and Ecosystems",
+        "content": "Understanding relationships between organisms and their environment.",
+        "duration": "80 min",
         "completed": false,
         "order": 5
       },
       {
         "Id": 30,
-        "title": "Post-Processing Basics",
-        "content": "Introduction to photo editing and enhancement techniques.",
-        "duration": "85 min",
+        "title": "Laboratory Techniques",
+        "content": "Hands-on introduction to common biological research methods.",
+        "duration": "95 min",
         "completed": false,
         "order": 6
       }

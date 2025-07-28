@@ -85,9 +85,9 @@ const Browse = () => {
     }
   })
   
-  function getCategoryIcon(category) {
+function getCategoryIcon(category) {
     const iconMap = {
-      "Technology": "Code",
+      "Programming": "Code",
       "Business": "Briefcase", 
       "Design": "Palette",
       "Marketing": "TrendingUp",
