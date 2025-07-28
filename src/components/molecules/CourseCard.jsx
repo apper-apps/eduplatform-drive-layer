@@ -1,13 +1,38 @@
 import { Link } from "react-router-dom"
+import { useState } from "react"
 import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
 import Badge from "@/components/atoms/Badge"
 
 const CourseCard = ({ course, className }) => {
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+  
   const difficultyColors = {
     "Beginner": "success",
     "Intermediate": "warning", 
     "Advanced": "error"
+  }
+
+  const handleImageError = () => {
+    setImageError(true)
+    setImageLoading(false)
+  }
+
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
+
+  // Fallback placeholder based on course category
+  const getCategoryIcon = (category) => {
+    const iconMap = {
+      "Technology": "Code",
+      "Business": "TrendingUp",
+      "Design": "Palette", 
+      "Arts": "Camera",
+      "Science": "Microscope"
+    }
+    return iconMap[category] || "BookOpen"
   }
   
   return (
@@ -18,12 +43,43 @@ const CourseCard = ({ course, className }) => {
         className
       )}
     >
-      <div className="relative overflow-hidden">
-        <img 
-          src={course.thumbnail} 
-          alt={course.title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+<div className="relative overflow-hidden bg-gray-100">
+        {!imageError ? (
+          <>
+            <img 
+              src={course.thumbnail} 
+              alt={course.title}
+              className={cn(
+                "w-full h-48 object-cover group-hover:scale-105 transition-all duration-300",
+                imageLoading && "opacity-0"
+              )}
+              onError={handleImageError}
+              onLoad={handleImageLoad}
+            />
+            {imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <div className="animate-pulse">
+                  <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <ApperIcon name="Image" size={24} className="text-gray-400" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center mb-3 mx-auto shadow-sm">
+                <ApperIcon 
+                  name={getCategoryIcon(course.category)} 
+                  size={24} 
+                  className="text-gray-500" 
+                />
+              </div>
+              <p className="text-xs text-gray-500 font-medium">{course.category}</p>
+            </div>
+          </div>
+        )}
         <div className="absolute top-4 right-4">
           <Badge variant={difficultyColors[course.difficulty] || "default"}>
             {course.difficulty}
