@@ -1,10 +1,6 @@
 import coursesData from "@/services/mockData/courses.json";
-import { progressService } from "./progressService";
-import { ratingService } from "./ratingService";
-import React from "react";
+import { ratingService } from "@/services/api/ratingService";
 import { progressService } from "@/services/api/progressService";
-import Error from "@/components/ui/Error";
-
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 export const courseService = {
