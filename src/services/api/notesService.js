@@ -1,160 +1,362 @@
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
-
-// Mock notes data storage
-let notesData = [
-  {
-    Id: 1,
-    courseId: 1,
-    lessonId: 1,
-    title: "Key Concepts",
-    content: "Remember to focus on component lifecycle and state management patterns.",
-    timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-    lastUpdated: new Date(Date.now() - 86400000).toISOString()
-  },
-  {
-    Id: 2,
-    courseId: 1,
-    lessonId: 1,
-    title: "Important Resources",
-    content: "Check the React documentation for hooks best practices. The useEffect dependency array is crucial.",
-    timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-    lastUpdated: new Date(Date.now() - 3600000).toISOString()
-  }
-]
-
-let nextId = 3
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const notesService = {
   async getAll() {
-    await delay(200)
-    return [...notesData]
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "courseId" } },
+          { field: { Name: "lessonId" } },
+          { field: { Name: "title" } },
+          { field: { Name: "content" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "lastUpdated" } }
+        ],
+        orderBy: [{ fieldName: "timestamp", sorttype: "DESC" }]
+      };
+
+      const response = await apperClient.fetchRecords("note", params);
+      
+      if (!response || !response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching notes:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
   async getById(id) {
-    await delay(150)
-    if (!Number.isInteger(id)) {
-      throw new Error("Invalid note ID")
+    try {
+      if (!Number.isInteger(id)) {
+        throw new Error("Invalid note ID");
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "courseId" } },
+          { field: { Name: "lessonId" } },
+          { field: { Name: "title" } },
+          { field: { Name: "content" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "lastUpdated" } }
+        ]
+      };
+
+      const response = await apperClient.getRecordById("note", id, params);
+      
+      if (!response || !response.data) {
+        throw new Error("Note not found");
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching note with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    const note = notesData.find(note => note.Id === id)
-    if (!note) {
-      throw new Error("Note not found")
-    }
-    return { ...note }
   },
 
   async getByLesson(courseId, lessonId) {
-    await delay(200)
-    if (!Number.isInteger(courseId) || !Number.isInteger(lessonId)) {
-      throw new Error("Invalid course or lesson ID")
+    try {
+      if (!Number.isInteger(courseId) || !Number.isInteger(lessonId)) {
+        throw new Error("Invalid course or lesson ID");
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "courseId" } },
+          { field: { Name: "lessonId" } },
+          { field: { Name: "title" } },
+          { field: { Name: "content" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "lastUpdated" } }
+        ],
+        where: [
+          { FieldName: "courseId", Operator: "EqualTo", Values: [courseId] },
+          { FieldName: "lessonId", Operator: "EqualTo", Values: [lessonId] }
+        ],
+        orderBy: [{ fieldName: "timestamp", sorttype: "DESC" }]
+      };
+
+      const response = await apperClient.fetchRecords("note", params);
+      
+      if (!response || !response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching lesson notes:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
     }
-    
-    return notesData
-      .filter(note => note.courseId === courseId && note.lessonId === lessonId)
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .map(note => ({ ...note }))
   },
 
   async getByCourse(courseId) {
-    await delay(200)
-    if (!Number.isInteger(courseId)) {
-      throw new Error("Invalid course ID")
+    try {
+      if (!Number.isInteger(courseId)) {
+        throw new Error("Invalid course ID");
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "courseId" } },
+          { field: { Name: "lessonId" } },
+          { field: { Name: "title" } },
+          { field: { Name: "content" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "lastUpdated" } }
+        ],
+        where: [
+          { FieldName: "courseId", Operator: "EqualTo", Values: [courseId] }
+        ],
+        orderBy: [{ fieldName: "timestamp", sorttype: "DESC" }]
+      };
+
+      const response = await apperClient.fetchRecords("note", params);
+      
+      if (!response || !response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching course notes:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
     }
-    
-    return notesData
-      .filter(note => note.courseId === courseId)
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .map(note => ({ ...note }))
   },
 
   async create(noteData) {
-    await delay(250)
-    if (!noteData.courseId || !noteData.lessonId || !noteData.title || !noteData.content) {
-      throw new Error("Missing required note data")
-    }
+    try {
+      if (!noteData.courseId || !noteData.lessonId || !noteData.title || !noteData.content) {
+        throw new Error("Missing required note data");
+      }
 
-    const newNote = {
-      Id: nextId++,
-      courseId: noteData.courseId,
-      lessonId: noteData.lessonId,
-      title: noteData.title.trim(),
-      content: noteData.content.trim(),
-      timestamp: new Date().toISOString(),
-      lastUpdated: new Date().toISOString()
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Name: noteData.title.trim(),
+          courseId: noteData.courseId,
+          lessonId: noteData.lessonId,
+          title: noteData.title.trim(),
+          content: noteData.content.trim(),
+          timestamp: new Date().toISOString(),
+          lastUpdated: new Date().toISOString()
+        }]
+      };
+
+      const response = await apperClient.createRecord("note", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create note ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+        }
+        
+        return successfulRecords.length > 0 ? successfulRecords[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error creating note:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    notesData.push(newNote)
-    return { ...newNote }
   },
 
   async update(id, updates) {
-    await delay(200)
-    if (!Number.isInteger(id)) {
-      throw new Error("Invalid note ID")
+    try {
+      if (!Number.isInteger(id)) {
+        throw new Error("Invalid note ID");
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Id: id,
+          ...(updates.title && { title: updates.title.trim() }),
+          ...(updates.content && { content: updates.content.trim() }),
+          lastUpdated: new Date().toISOString()
+        }]
+      };
+
+      const response = await apperClient.updateRecord("note", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        return successfulUpdates.length > 0 ? successfulUpdates[0].data : null;
+      }
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error updating note:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    const index = notesData.findIndex(note => note.Id === id)
-    if (index === -1) {
-      throw new Error("Note not found")
-    }
-    
-    const updatedNote = {
-      ...notesData[index],
-      ...updates,
-      Id: notesData[index].Id, // Preserve original ID
-      timestamp: notesData[index].timestamp, // Preserve creation time
-      lastUpdated: new Date().toISOString()
-    }
-    
-    if (updatedNote.title) {
-      updatedNote.title = updatedNote.title.trim()
-    }
-    if (updatedNote.content) {
-      updatedNote.content = updatedNote.content.trim()
-    }
-    
-    notesData[index] = updatedNote
-    return { ...updatedNote }
   },
 
   async delete(id) {
-    await delay(200)
-    if (!Number.isInteger(id)) {
-      throw new Error("Invalid note ID")
+    try {
+      if (!Number.isInteger(id)) {
+        throw new Error("Invalid note ID");
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        RecordIds: [id]
+      };
+
+      const response = await apperClient.deleteRecord("note", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return true;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error deleting note:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    const index = notesData.findIndex(note => note.Id === id)
-    if (index === -1) {
-      throw new Error("Note not found")
-    }
-    
-    const deletedNote = notesData.splice(index, 1)[0]
-    return { ...deletedNote }
   },
 
   async search(query, courseId = null, lessonId = null) {
-    await delay(200)
-    if (!query || typeof query !== 'string') {
-      return []
+    try {
+      if (!query || typeof query !== 'string') {
+        return [];
+      }
+
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const whereConditions = [
+        { FieldName: "title", Operator: "Contains", Values: [query.trim()] },
+        { FieldName: "content", Operator: "Contains", Values: [query.trim()] }
+      ];
+
+      if (courseId) {
+        whereConditions.push({ FieldName: "courseId", Operator: "EqualTo", Values: [courseId] });
+      }
+
+      if (lessonId) {
+        whereConditions.push({ FieldName: "lessonId", Operator: "EqualTo", Values: [lessonId] });
+      }
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "courseId" } },
+          { field: { Name: "lessonId" } },
+          { field: { Name: "title" } },
+          { field: { Name: "content" } },
+          { field: { Name: "timestamp" } },
+          { field: { Name: "lastUpdated" } }
+        ],
+        whereGroups: [{
+          operator: "OR",
+          subGroups: [{
+            conditions: whereConditions.slice(0, 2),
+            operator: "OR"
+          }]
+        }],
+        orderBy: [{ fieldName: "timestamp", sorttype: "DESC" }]
+      };
+
+      const response = await apperClient.fetchRecords("note", params);
+      
+      if (!response || !response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error searching notes:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
     }
-    
-    const searchTerm = query.toLowerCase().trim()
-    let filteredNotes = [...notesData]
-    
-    if (courseId) {
-      filteredNotes = filteredNotes.filter(note => note.courseId === courseId)
-    }
-    
-    if (lessonId) {
-      filteredNotes = filteredNotes.filter(note => note.lessonId === lessonId)
-    }
-    
-    return filteredNotes
-      .filter(note => 
-        note.title.toLowerCase().includes(searchTerm) ||
-        note.content.toLowerCase().includes(searchTerm)
-      )
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .map(note => ({ ...note }))
   }
-}
+};

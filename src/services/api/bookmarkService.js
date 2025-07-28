@@ -1,67 +1,178 @@
-// Mock bookmark data - stored as array of course IDs
-let bookmarkedCourseIds = [1, 3] // Sample bookmarked courses
-
-// Simulate API delay
 function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export const bookmarkService = {
   async getAll() {
-    await delay(200)
-    return [...bookmarkedCourseIds]
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "courseId" } }
+        ]
+      };
+
+      const response = await apperClient.fetchRecords("bookmark", params);
+      
+      if (!response || !response.data || response.data.length === 0) {
+        return [];
+      }
+
+      return response.data.map(bookmark => bookmark.courseId);
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching bookmarks:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
   },
 
   async toggle(courseId) {
-    await delay(250)
-    
-    if (typeof courseId !== 'number') {
-      throw new Error('Course ID must be a number')
-    }
+    try {
+      if (typeof courseId !== 'number') {
+        throw new Error('Course ID must be a number');
+      }
 
-    const index = bookmarkedCourseIds.indexOf(courseId)
-    let isBookmarked = false
-    
-    if (index === -1) {
-      // Add bookmark
-      bookmarkedCourseIds.push(courseId)
-      isBookmarked = true
-    } else {
-      // Remove bookmark
-      bookmarkedCourseIds.splice(index, 1)
-      isBookmarked = false
+      const isCurrentlyBookmarked = await this.isBookmarked(courseId);
+      
+      if (isCurrentlyBookmarked) {
+        await this.removeBookmark(courseId);
+        return {
+          courseId,
+          isBookmarked: false,
+          message: 'Course removed from bookmarks'
+        };
+      } else {
+        await this.addBookmark(courseId);
+        return {
+          courseId,
+          isBookmarked: true,
+          message: 'Course bookmarked successfully'
+        };
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error.message);
+      throw error;
     }
-    
-    return { 
-      courseId, 
-      isBookmarked,
-      message: isBookmarked ? 'Course bookmarked successfully' : 'Course removed from bookmarks'
+  },
+
+  async addBookmark(courseId) {
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        records: [{
+          Name: `Bookmark for course ${courseId}`,
+          courseId: courseId
+        }]
+      };
+
+      const response = await apperClient.createRecord("bookmark", params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        throw new Error(response.message);
+      }
+
+      return true;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error adding bookmark:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
   },
 
   async isBookmarked(courseId) {
-    await delay(100)
-    return bookmarkedCourseIds.includes(courseId)
+    try {
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      const params = {
+        fields: [{ field: { Name: "Id" } }],
+        where: [
+          { FieldName: "courseId", Operator: "EqualTo", Values: [courseId] }
+        ],
+        pagingInfo: { limit: 1, offset: 0 }
+      };
+
+      const response = await apperClient.fetchRecords("bookmark", params);
+      return response.success && response.data && response.data.length > 0;
+    } catch (error) {
+      console.error("Error checking bookmark:", error.message);
+      return false;
+    }
   },
 
   async getBookmarkedCourses() {
-    await delay(200)
-    return [...bookmarkedCourseIds]
+    return await this.getAll();
   },
 
   async removeBookmark(courseId) {
-    await delay(200)
-    
-    if (typeof courseId !== 'number') {
-      throw new Error('Course ID must be a number')
-    }
+    try {
+      if (typeof courseId !== 'number') {
+        throw new Error('Course ID must be a number');
+      }
 
-    const index = bookmarkedCourseIds.indexOf(courseId)
-    if (index !== -1) {
-      bookmarkedCourseIds.splice(index, 1)
-      return { courseId, message: 'Course removed from bookmarks' }
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // First find the bookmark
+      const findParams = {
+        fields: [{ field: { Name: "Id" } }],
+        where: [
+          { FieldName: "courseId", Operator: "EqualTo", Values: [courseId] }
+        ]
+      };
+
+      const findResponse = await apperClient.fetchRecords("bookmark", findParams);
+      
+      if (!findResponse.success || !findResponse.data || findResponse.data.length === 0) {
+        throw new Error('Course not found in bookmarks');
+      }
+
+      const bookmarkId = findResponse.data[0].Id;
+
+      // Delete the bookmark
+      const deleteParams = {
+        RecordIds: [bookmarkId]
+      };
+
+      const deleteResponse = await apperClient.deleteRecord("bookmark", deleteParams);
+      
+      if (!deleteResponse.success) {
+        console.error(deleteResponse.message);
+        throw new Error(deleteResponse.message);
+      }
+
+      return { courseId, message: 'Course removed from bookmarks' };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error removing bookmark:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      throw error;
     }
-    
-    throw new Error('Course not found in bookmarks')
   }
-}
+};
