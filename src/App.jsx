@@ -1,20 +1,26 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import { ToastContainer } from "react-toastify"
-import Layout from "@/components/organisms/Layout"
-import CourseCatalog from "@/components/pages/CourseCatalog"
-import MyLearning from "@/components/pages/MyLearning"
-import Browse from "@/components/pages/Browse"
-import CourseDetail from "@/components/pages/CourseDetail"
-import LessonViewer from "@/components/pages/LessonViewer"
+import { Route, Router, Routes } from "react-router-dom";
+import React, { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "@/index.css";
+import Layout from "@/components/organisms/Layout";
+import CourseCatalog from "@/components/pages/CourseCatalog";
+import Browse from "@/components/pages/Browse";
+import CourseDetail from "@/components/pages/CourseDetail";
+import MyLearning from "@/components/pages/MyLearning";
+import LessonViewer from "@/components/pages/LessonViewer";
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("");
+const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
   return (
     <Router>
       <div className="App">
-        <Layout>
+        <Layout searchTerm={searchTerm} onSearch={handleSearch}>
           <Routes>
-            <Route path="/" element={<CourseCatalog />} />
-            <Route path="/courses" element={<CourseCatalog />} />
+            <Route path="/" element={<CourseCatalog searchTerm={searchTerm} />} />
+            <Route path="/courses" element={<CourseCatalog searchTerm={searchTerm} />} />
             <Route path="/my-learning" element={<MyLearning />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/course/:courseId" element={<CourseDetail />} />
@@ -35,8 +41,8 @@ function App() {
           theme="light"
         />
       </div>
-    </Router>
-  )
+</Router>
+  );
 }
 
-export default App
+export default App;
