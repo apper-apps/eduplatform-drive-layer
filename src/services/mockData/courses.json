@@ -1,0 +1,302 @@
+[
+  {
+    "Id": 1,
+    "title": "React.js Fundamentals",
+    "description": "Master the fundamentals of React.js including components, state management, and modern hooks. Perfect for beginners looking to start their React journey.",
+    "thumbnail": "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop",
+    "instructor": "Sarah Johnson",
+    "duration": "8 hours",
+    "category": "Technology",
+    "difficulty": "Beginner",
+    "lessons": [
+      {
+        "Id": 1,
+        "title": "Introduction to React",
+        "content": "Learn the basics of React and why it's popular for building user interfaces.",
+        "duration": "45 min",
+        "completed": false,
+        "order": 1
+      },
+      {
+        "Id": 2,
+        "title": "Components and JSX",
+        "content": "Understanding React components and JSX syntax for building dynamic UIs.",
+        "duration": "60 min",
+        "completed": false,
+        "order": 2
+      },
+      {
+        "Id": 3,
+        "title": "Props and State",
+        "content": "Managing component data with props and state for interactive applications.",
+        "duration": "55 min",
+        "completed": false,
+        "order": 3
+      },
+      {
+        "Id": 4,
+        "title": "Event Handling",
+        "content": "Handle user interactions and events in React applications.",
+        "duration": "40 min",
+        "completed": false,
+        "order": 4
+      },
+      {
+        "Id": 5,
+        "title": "React Hooks",
+        "content": "Modern React development with useState, useEffect, and custom hooks.",
+        "duration": "70 min",
+        "completed": false,
+        "order": 5
+      },
+      {
+        "Id": 6,
+        "title": "Final Project",
+        "content": "Build a complete React application using all the concepts learned.",
+        "duration": "90 min",
+        "completed": false,
+        "order": 6
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "title": "Digital Marketing Strategy",
+    "description": "Comprehensive guide to creating effective digital marketing campaigns across multiple channels including social media, email, and content marketing.",
+    "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
+    "instructor": "Michael Chen",
+    "duration": "12 hours",
+    "category": "Business",
+    "difficulty": "Intermediate",
+    "lessons": [
+      {
+        "Id": 7,
+        "title": "Marketing Fundamentals",
+        "content": "Understanding core marketing principles and digital transformation.",
+        "duration": "50 min",
+        "completed": false,
+        "order": 1
+      },
+      {
+        "Id": 8,
+        "title": "Target Audience Research",
+        "content": "Identifying and analyzing your ideal customer segments.",
+        "duration": "65 min",
+        "completed": false,
+        "order": 2
+      },
+      {
+        "Id": 9,
+        "title": "Content Marketing Strategy",
+        "content": "Creating compelling content that engages and converts.",
+        "duration": "75 min",
+        "completed": false,
+        "order": 3
+      },
+      {
+        "Id": 10,
+        "title": "Social Media Marketing",
+        "content": "Leveraging social platforms for brand awareness and engagement.",
+        "duration": "80 min",
+        "completed": false,
+        "order": 4
+      },
+      {
+        "Id": 11,
+        "title": "Email Marketing Campaigns",
+        "content": "Building effective email marketing funnels and automation.",
+        "duration": "60 min",
+        "completed": false,
+        "order": 5
+      },
+      {
+        "Id": 12,
+        "title": "Analytics and Optimization",
+        "content": "Measuring campaign performance and optimizing for better results.",
+        "duration": "70 min",
+        "completed": false,
+        "order": 6
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "title": "UX/UI Design Principles",
+    "description": "Learn essential user experience and interface design principles to create intuitive and beautiful digital products that users love.",
+    "thumbnail": "https://images.unsplash.com/photo-1541462606-122b95521ab7?w=400&h=300&fit=crop",
+    "instructor": "Emily Rodriguez",
+    "duration": "10 hours",
+    "category": "Design",
+    "difficulty": "Beginner",
+    "lessons": [
+      {
+        "Id": 13,
+        "title": "Introduction to UX/UI",
+        "content": "Understanding the difference between UX and UI and their importance.",
+        "duration": "40 min",
+        "completed": false,
+        "order": 1
+      },
+      {
+        "Id": 14,
+        "title": "User Research Methods",
+        "content": "Conducting effective user research to inform design decisions.",
+        "duration": "65 min",
+        "completed": false,
+        "order": 2
+      },
+      {
+        "Id": 15,
+        "title": "Wireframing and Prototyping",
+        "content": "Creating wireframes and interactive prototypes for validation.",
+        "duration": "85 min",
+        "completed": false,
+        "order": 3
+      },
+      {
+        "Id": 16,
+        "title": "Visual Design Principles",
+        "content": "Color theory, typography, and layout principles for effective UI.",
+        "duration": "70 min",
+        "completed": false,
+        "order": 4
+      },
+      {
+        "Id": 17,
+        "title": "Usability Testing",
+        "content": "Testing your designs with real users and iterating based on feedback.",
+        "duration": "55 min",
+        "completed": false,
+        "order": 5
+      },
+      {
+        "Id": 18,
+        "title": "Design Systems",
+        "content": "Creating consistent and scalable design systems for large projects.",
+        "duration": "75 min",
+        "completed": false,
+        "order": 6
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "title": "Data Science with Python",
+    "description": "Comprehensive introduction to data science using Python, covering data analysis, visualization, and machine learning fundamentals.",
+    "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
+    "instructor": "Dr. James Wilson",
+    "duration": "15 hours",
+    "category": "Technology",
+    "difficulty": "Advanced",
+    "lessons": [
+      {
+        "Id": 19,
+        "title": "Python for Data Science",
+        "content": "Setting up Python environment and essential libraries for data science.",
+        "duration": "60 min",
+        "completed": false,
+        "order": 1
+      },
+      {
+        "Id": 20,
+        "title": "Data Manipulation with Pandas",
+        "content": "Loading, cleaning, and transforming data using the Pandas library.",
+        "duration": "90 min",
+        "completed": false,
+        "order": 2
+      },
+      {
+        "Id": 21,
+        "title": "Data Visualization",
+        "content": "Creating compelling visualizations with Matplotlib and Seaborn.",
+        "duration": "80 min",
+        "completed": false,
+        "order": 3
+      },
+      {
+        "Id": 22,
+        "title": "Statistical Analysis",
+        "content": "Performing statistical analysis and hypothesis testing on datasets.",
+        "duration": "85 min",
+        "completed": false,
+        "order": 4
+      },
+      {
+        "Id": 23,
+        "title": "Machine Learning Basics",
+        "content": "Introduction to machine learning algorithms and model building.",
+        "duration": "100 min",
+        "completed": false,
+        "order": 5
+      },
+      {
+        "Id": 24,
+        "title": "Real-world Project",
+        "content": "Apply all learned concepts in a comprehensive data science project.",
+        "duration": "120 min",
+        "completed": false,
+        "order": 6
+      }
+    ]
+  },
+  {
+    "Id": 5,
+    "title": "Photography Masterclass",
+    "description": "From camera basics to advanced composition techniques, learn everything you need to capture stunning photographs in any situation.",
+    "thumbnail": "https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400&h=300&fit=crop",
+    "instructor": "Alex Thompson",
+    "duration": "9 hours",
+    "category": "Arts",
+    "difficulty": "Intermediate",
+    "lessons": [
+      {
+        "Id": 25,
+        "title": "Camera Fundamentals",
+        "content": "Understanding camera settings, exposure triangle, and shooting modes.",
+        "duration": "55 min",
+        "completed": false,
+        "order": 1
+      },
+      {
+        "Id": 26,
+        "title": "Composition Techniques",
+        "content": "Rule of thirds, leading lines, and other composition principles.",
+        "duration": "70 min",
+        "completed": false,
+        "order": 2
+      },
+      {
+        "Id": 27,
+        "title": "Lighting and Exposure",
+        "content": "Working with natural and artificial light for perfect exposure.",
+        "duration": "80 min",
+        "completed": false,
+        "order": 3
+      },
+      {
+        "Id": 28,
+        "title": "Portrait Photography",
+        "content": "Techniques for capturing compelling portraits and working with subjects.",
+        "duration": "75 min",
+        "completed": false,
+        "order": 4
+      },
+      {
+        "Id": 29,
+        "title": "Landscape Photography",
+        "content": "Capturing stunning landscapes and outdoor scenes.",
+        "duration": "65 min",
+        "completed": false,
+        "order": 5
+      },
+      {
+        "Id": 30,
+        "title": "Post-Processing Basics",
+        "content": "Introduction to photo editing and enhancement techniques.",
+        "duration": "85 min",
+        "completed": false,
+        "order": 6
+      }
+    ]
+  }
+]

@@ -1,0 +1,222 @@
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import CourseCard from "@/components/molecules/CourseCard"
+import Loading from "@/components/ui/Loading"
+import Error from "@/components/ui/Error"
+import Empty from "@/components/ui/Empty"
+import Button from "@/components/atoms/Button"
+import Badge from "@/components/atoms/Badge"
+import ApperIcon from "@/components/ApperIcon"
+import { courseService } from "@/services/api/courseService"
+
+const MyLearning = () => {
+  const [enrolledCourses, setEnrolledCourses] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const navigate = useNavigate()
+  
+  const loadEnrolledCourses = async () => {
+    try {
+      setLoading(true)
+      setError("")
+      // Simulate enrolled courses by getting first 3 courses
+      const allCourses = await courseService.getAll()
+      const enrolled = allCourses.slice(0, 3).map(course => ({
+        ...course,
+        progress: Math.floor(Math.random() * 100),
+        lastAccessed: new Date(Date.now() - Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000),
+        completedLessons: Math.floor(Math.random() * (course.lessons?.length || 0))
+      }))
+      setEnrolledCourses(enrolled)
+    } catch (err) {
+      setError("Failed to load your learning progress. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  useEffect(() => {
+    loadEnrolledCourses()
+  }, [])
+  
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <div className="bg-gradient-to-r from-gray-200 to-gray-300 h-8 w-48 rounded-lg mb-4 animate-pulse"></div>
+          <div className="bg-gradient-to-r from-gray-200 to-gray-300 h-4 w-96 rounded animate-pulse"></div>
+        </div>
+        <Loading />
+      </div>
+    )
+  }
+  
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <Error message={error} onRetry={loadEnrolledCourses} />
+      </div>
+    )
+  }
+  
+  if (enrolledCourses.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <Empty
+          title="Start your learning journey"
+          description="You haven't enrolled in any courses yet. Explore our course catalog to find something that interests you!"
+          actionText="Browse Courses"
+          onAction={() => navigate("/courses")}
+          icon="BookOpen"
+        />
+      </div>
+    )
+  }
+  
+  return (
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-4xl font-display font-bold text-gray-900 mb-2">
+              My Learning
+              <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 bg-clip-text text-transparent ml-2">
+                Progress
+              </span>
+            </h1>
+            <p className="text-lg text-gray-600">
+              Continue where you left off and track your learning progress.
+            </p>
+          </div>
+          
+          <Button
+            onClick={() => navigate("/courses")}
+            className="hidden sm:flex"
+          >
+            <ApperIcon name="Plus" size={20} className="mr-2" />
+            Find New Courses
+          </Button>
+        </div>
+      </div>
+      
+      {/* Progress Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <ApperIcon name="BookOpen" size={24} className="text-primary-200" />
+            <Badge variant="default" className="bg-white/20 text-white border-white/30">
+              Active
+            </Badge>
+          </div>
+          <p className="text-3xl font-display font-bold mb-1">{enrolledCourses.length}</p>
+          <p className="text-primary-100 text-sm">Enrolled Courses</p>
+        </div>
+        
+        <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <ApperIcon name="CheckCircle" size={24} className="text-emerald-200" />
+            <Badge variant="success" className="bg-white/20 text-white border-white/30">
+              Complete
+            </Badge>
+          </div>
+          <p className="text-3xl font-display font-bold mb-1">
+            {enrolledCourses.filter(c => c.progress === 100).length}
+          </p>
+          <p className="text-emerald-100 text-sm">Completed</p>
+        </div>
+        
+        <div className="bg-gradient-to-r from-secondary-500 to-secondary-600 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <ApperIcon name="Clock" size={24} className="text-secondary-200" />
+            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+              Hours
+            </Badge>
+          </div>
+          <p className="text-3xl font-display font-bold mb-1">42</p>
+          <p className="text-secondary-100 text-sm">Total Hours</p>
+        </div>
+        
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl p-6 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <ApperIcon name="Trophy" size={24} className="text-yellow-200" />
+            <Badge variant="warning" className="bg-white/20 text-white border-white/30">
+              Streak
+            </Badge>
+          </div>
+          <p className="text-3xl font-display font-bold mb-1">7</p>
+          <p className="text-yellow-100 text-sm">Day Streak</p>
+        </div>
+      </div>
+      
+      {/* Continue Learning Section */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-display font-semibold text-gray-900 mb-6">Continue Learning</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {enrolledCourses.map((course) => (
+            <div key={course.Id} className="relative">
+              <CourseCard course={course} />
+              
+              {/* Progress Overlay */}
+              <div className="absolute top-4 left-4 z-10">
+                <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-white/20">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+                        style={{ width: `${course.progress}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-xs font-semibold text-gray-700">{course.progress}%</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Last Accessed */}
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-white/20">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center text-gray-600">
+                      <ApperIcon name="Clock" size={14} className="mr-1" />
+                      <span>Last accessed {Math.floor((Date.now() - course.lastAccessed) / (1000 * 60 * 60 * 24))} days ago</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <ApperIcon name="CheckCircle" size={14} className="mr-1" />
+                      <span>{course.completedLessons}/{course.lessons?.length || 0} lessons</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      {/* Recommendations */}
+      <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-8 border border-primary-200">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full text-white mb-4">
+            <ApperIcon name="Lightbulb" size={32} />
+          </div>
+          <h3 className="text-2xl font-display font-semibold text-gray-900 mb-2">
+            Ready for more?
+          </h3>
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            Based on your learning progress, we recommend exploring these new courses to expand your skills.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button onClick={() => navigate("/courses")}>
+              <ApperIcon name="Search" size={20} className="mr-2" />
+              Explore Courses
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/browse")}>
+              <ApperIcon name="Filter" size={20} className="mr-2" />
+              Browse by Category
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default MyLearning
