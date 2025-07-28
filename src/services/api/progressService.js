@@ -82,8 +82,17 @@ export const progressService = {
     return await this.updateLessonProgress(userId, courseId, lessonId, true)
   },
 
-  async markLessonIncomplete(userId = 1, courseId, lessonId) {
+async markLessonIncomplete(userId = 1, courseId, lessonId) {
     await delay(300)
     return await this.updateLessonProgress(userId, courseId, lessonId, false)
+  },
+
+  async getEnrolledCoursesWithProgress(userId = 1) {
+    await delay(200)
+    const userProgress = await this.getUserProgress(userId)
+    return userProgress.map(progress => ({
+      courseId: progress.courseId,
+      progress: { ...progress }
+    }))
   }
 }

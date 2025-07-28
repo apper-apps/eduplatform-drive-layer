@@ -15,18 +15,22 @@ const MyLearning = () => {
   const [error, setError] = useState("")
   const navigate = useNavigate()
   
-  const loadEnrolledCourses = async () => {
+const loadEnrolledCourses = async () => {
     try {
       setLoading(true)
       setError("")
-      // Simulate enrolled courses by getting first 3 courses
-      const allCourses = await courseService.getAll()
-      const enrolled = allCourses.slice(0, 3).map(course => ({
-        ...course,
-        progress: Math.floor(Math.random() * 100),
-        lastAccessed: new Date(Date.now() - Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000),
-        completedLessons: Math.floor(Math.random() * (course.lessons?.length || 0))
-      }))
+      // Get courses with actual progress data
+      const coursesWithProgress = await courseService.getAllWithProgress(1)
+      // Filter to only enrolled courses (those with progress data)
+      const enrolled = coursesWithProgress
+        .filter(course => course.progress && course.progress.completedLessons.length > 0)
+        .map(course => ({
+          ...course,
+          progress: course.progress.progressPercentage,
+          lastAccessed: course.progress.lastAccessed,
+          completedLessons: course.progress.completedLessons.length,
+          progressData: course.progress
+        }))
       setEnrolledCourses(enrolled)
     } catch (err) {
       setError("Failed to load your learning progress. Please try again.")
@@ -152,38 +156,55 @@ const MyLearning = () => {
       <div className="mb-8">
         <h2 className="text-2xl font-display font-semibold text-gray-900 mb-6">Continue Learning</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {enrolledCourses.map((course) => (
-            <div key={course.Id} className="relative">
-              <CourseCard course={course} />
+{enrolledCourses.map((course) => (
+            <div key={course.Id} className="bg-white rounded-xl border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+              <CourseCard course={course} progress={course.progressData} className="shadow-none border-none hover:shadow-none hover:translate-y-0" />
               
-              {/* Progress Overlay */}
-              <div className="absolute top-4 left-4 z-10">
-                <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-white/20">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
-                        style={{ width: `${course.progress}%` }}
-                      ></div>
+              <div className="px-6 pb-6 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <ApperIcon name="Clock" size={16} className="mr-2" />
+                      <span>Last accessed {Math.floor((Date.now() - new Date(course.lastAccessed)) / (1000 * 60 * 60 * 24))} days ago</span>
                     </div>
-                    <span className="text-xs font-semibold text-gray-700">{course.progress}%</span>
+                    <div className="flex items-center">
+                      <ApperIcon name="CheckCircle" size={16} className="mr-2" />
+                      <span>{course.completedLessons} of {course.lessons?.length || 0} completed</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              {/* Last Accessed */}
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-white/20">
-                  <div className="flex items-center justify-between text-xs">
-                    <div className="flex items-center text-gray-600">
-                      <ApperIcon name="Clock" size={14} className="mr-1" />
-                      <span>Last accessed {Math.floor((Date.now() - course.lastAccessed) / (1000 * 60 * 60 * 24))} days ago</span>
-                    </div>
-                    <div className="flex items-center text-gray-600">
-                      <ApperIcon name="CheckCircle" size={14} className="mr-1" />
-                      <span>{course.completedLessons}/{course.lessons?.length || 0} lessons</span>
-                    </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Progress</span>
+                    <span className="text-sm font-semibold text-gray-900">{course.progress}%</span>
                   </div>
+                  
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+                      style={{ width: `${course.progress}%` }}
+                    ></div>
+                  </div>
+                  
+                  <Button 
+                    onClick={() => {
+                      // Navigate to next incomplete lesson or first lesson
+                      const nextLessonId = course.lessons?.find(lesson => 
+                        !course.progressData.completedLessons.includes(lesson.Id)
+                      )?.Id || course.lessons?.[0]?.Id
+                      
+                      if (nextLessonId) {
+                        navigate(`/course/${course.Id}/lesson/${nextLessonId}`)
+                      } else {
+                        navigate(`/course/${course.Id}`)
+                      }
+                    }}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+                  >
+                    <ApperIcon name="Play" size={18} />
+                    <span>Continue Learning</span>
+                  </Button>
                 </div>
               </div>
             </div>

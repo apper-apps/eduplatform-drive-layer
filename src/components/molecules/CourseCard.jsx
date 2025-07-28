@@ -125,7 +125,7 @@ const CourseCard = ({ course, className, progress = null }) => {
           </div>
           
           {progress && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-600 font-medium">Progress</span>
                 <span className="text-gray-700 font-semibold">{progress.progressPercentage}%</span>
@@ -136,7 +136,7 @@ const CourseCard = ({ course, className, progress = null }) => {
                   style={{ width: `${progress.progressPercentage}%` }}
                 ></div>
               </div>
-              <div className="flex items-center justify-between text-xs text-gray-500">
+              <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                 <span>{progress.completedLessons?.length || 0} of {course.lessons?.length || 0} completed</span>
                 {progress.lastAccessed && (
                   <span>

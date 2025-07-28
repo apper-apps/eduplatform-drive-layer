@@ -9,7 +9,7 @@ export const courseService = {
     return [...coursesData]
   },
 
-  async getAllWithProgress(userId = 1) {
+async getAllWithProgress(userId = 1) {
     await delay(350)
     const courses = [...coursesData]
     const userProgress = await progressService.getUserProgress(userId)
