@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useState } from "react"
 import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
+import StarRating from "@/components/atoms/StarRating"
 import Badge from "@/components/atoms/Badge"
 
 const CourseCard = ({ course, className, progress = null }) => {
@@ -91,9 +92,19 @@ const iconMap = {
         <h3 className="font-display font-semibold text-xl text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
           {course.title}
         </h3>
-<p className="text-gray-600 text-sm mb-4 line-clamp-2">
+<p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {course.description}
         </p>
+        
+        {/* Rating Display */}
+        {course.averageRating > 0 && (
+          <div className="flex items-center gap-2 mb-3">
+            <StarRating rating={course.averageRating} size={14} />
+            <span className="text-sm text-gray-600">
+              {course.averageRating}/5 ({course.ratingCount} review{course.ratingCount !== 1 ? 's' : ''})
+            </span>
+          </div>
+        )}
         
         {/* Category Badge */}
         <div className="flex items-center gap-2 mb-4">

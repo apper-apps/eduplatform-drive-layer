@@ -6,23 +6,25 @@ import LessonItem from "@/components/molecules/LessonItem"
 import Loading from "@/components/ui/Loading"
 import Error from "@/components/ui/Error"
 import ApperIcon from "@/components/ApperIcon"
+import StarRating from "@/components/atoms/StarRating"
 import { courseService } from "@/services/api/courseService"
 import { toast } from "react-toastify"
-
 const CourseDetail = () => {
   const { courseId } = useParams()
   const navigate = useNavigate()
-  const [course, setCourse] = useState(null)
+const [course, setCourse] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [isEnrolled, setIsEnrolled] = useState(false)
-  
+  const [userRating, setUserRating] = useState(null)
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false)
 const loadCourse = async () => {
     try {
       setLoading(true)
       setError("")
-      const data = await courseService.getById(parseInt(courseId))
+      const data = await courseService.getByIdWithProgress(parseInt(courseId))
       setCourse(data)
+      setUserRating(data.userRating)
       // Check actual enrollment status
       const enrollmentStatus = await courseService.checkEnrollment(parseInt(courseId))
       setIsEnrolled(enrollmentStatus)
@@ -36,7 +38,64 @@ const loadCourse = async () => {
   useEffect(() => {
     loadCourse()
   }, [courseId])
-  
+const handleRatingSubmit = async (rating) => {
+    if (!isEnrolled) {
+      toast.error("You must be enrolled to rate this course.")
+      return
+    }
+
+    try {
+      setIsSubmittingRating(true)
+      
+      if (userRating) {
+        // Update existing rating
+        await courseService.updateRating(1, parseInt(courseId), rating)
+        toast.success("Rating updated successfully!")
+      } else {
+        // Create new rating
+        await courseService.rateChapter(1, parseInt(courseId), rating)
+        toast.success("Rating submitted successfully!")
+      }
+      
+      setUserRating(rating)
+      // Reload course to get updated average rating
+      const updatedCourse = await courseService.getByIdWithProgress(parseInt(courseId))
+      setCourse(prev => ({
+        ...prev,
+        averageRating: updatedCourse.averageRating,
+        ratingCount: updatedCourse.ratingCount
+      }))
+      
+    } catch (err) {
+      toast.error(err.message || "Failed to submit rating. Please try again.")
+    } finally {
+      setIsSubmittingRating(false)
+    }
+  }
+
+  const handleDeleteRating = async () => {
+    if (!userRating) return
+
+    try {
+      setIsSubmittingRating(true)
+      await courseService.deleteRating(1, parseInt(courseId))
+      setUserRating(null)
+      toast.success("Rating removed successfully!")
+      
+      // Reload course to get updated average rating
+      const updatedCourse = await courseService.getByIdWithProgress(parseInt(courseId))
+      setCourse(prev => ({
+        ...prev,
+        averageRating: updatedCourse.averageRating,
+        ratingCount: updatedCourse.ratingCount
+      }))
+      
+    } catch (err) {
+      toast.error("Failed to remove rating. Please try again.")
+    } finally {
+      setIsSubmittingRating(false)
+    }
+  }
 const handleEnrollment = async () => {
     if (isEnrolled) {
       toast.success("Continuing your learning journey!")
@@ -52,16 +111,18 @@ const handleEnrollment = async () => {
     }
   }
 
-  const handleUnenroll = async () => {
+const handleUnenroll = async () => {
     try {
       await courseService.unenroll(parseInt(courseId))
       setIsEnrolled(false)
+      setUserRating(null) // Clear user rating when unenrolling
       toast.success("Successfully unenrolled from the course.")
+      // Reload course to get updated rating data
+      loadCourse()
     } catch (err) {
       toast.error("Failed to unenroll from course. Please try again.")
     }
   }
-  
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto">
@@ -203,8 +264,7 @@ const handleEnrollment = async () => {
               )}
             </div>
           </div>
-          
-          <div className="relative">
+<div className="relative">
             <img 
               src={course.thumbnail} 
               alt={course.title}
@@ -215,6 +275,64 @@ const handleEnrollment = async () => {
         </div>
       </div>
       
+      {/* Course Rating Section */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Course Rating</h3>
+        
+        <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+          {/* Average Rating Display */}
+          <div className="flex flex-col items-center sm:items-start">
+            <div className="flex items-center gap-3 mb-2">
+              <StarRating rating={course.averageRating || 0} size={20} />
+              <span className="text-2xl font-bold text-gray-900">
+                {course.averageRating > 0 ? `${course.averageRating}/5` : 'No ratings'}
+              </span>
+            </div>
+            <p className="text-sm text-gray-600">
+              {course.ratingCount > 0 
+                ? `Based on ${course.ratingCount} review${course.ratingCount !== 1 ? 's' : ''}`
+                : 'Be the first to rate this course'
+              }
+            </p>
+          </div>
+
+          {/* User Rating Section */}
+          {isEnrolled && (
+            <div className="flex flex-col gap-3 sm:border-l sm:pl-6">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">
+                  {userRating ? 'Your Rating' : 'Rate this course'}
+                </h4>
+                <StarRating 
+                  rating={userRating || 0}
+                  interactive={!isSubmittingRating}
+                  onRatingChange={handleRatingSubmit}  
+                  size={18}
+                />
+              </div>
+              {userRating && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleDeleteRating}
+                  disabled={isSubmittingRating}
+                  className="w-fit text-red-600 border-red-300 hover:bg-red-50"
+                >
+                  Remove Rating
+                </Button>
+              )}
+            </div>
+          )}
+          
+          {!isEnrolled && (
+            <div className="sm:border-l sm:pl-6">
+              <p className="text-sm text-gray-500">
+                Enroll in this course to rate it
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Course Content */}
         <div className="lg:col-span-2">
@@ -248,12 +366,14 @@ const handleEnrollment = async () => {
           <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-6">
             <h3 className="font-display font-semibold text-gray-900 mb-4">Course Stats</h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <ApperIcon name="Star" size={16} className="text-yellow-500 mr-2" />
-                  <span className="text-gray-600">Rating</span>
+                  <ApperIcon name="Users" size={16} className="text-gray-500 mr-2" />
+                  <span className="text-gray-600">Enrolled Students</span>
                 </div>
-                <span className="font-semibold text-gray-900">4.8/5</span>
+                <span className="font-semibold text-gray-900">
+                  {course.ratingCount > 0 ? `${course.ratingCount}+` : '0'}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center">

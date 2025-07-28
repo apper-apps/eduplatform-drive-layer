@@ -1,12 +1,30 @@
-import coursesData from "@/services/mockData/courses.json"
-import { progressService } from "./progressService"
+import coursesData from "@/services/mockData/courses.json";
+import { progressService } from "./progressService";
+import { ratingService } from "./ratingService";
+import React from "react";
+import { progressService } from "@/services/api/progressService";
+import Error from "@/components/ui/Error";
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 export const courseService = {
-  async getAll() {
+async getAll() {
     await delay(300)
-    return [...coursesData]
+    const courses = [...coursesData]
+    
+    // Add rating data to each course
+    const coursesWithRatings = await Promise.all(
+      courses.map(async (course) => {
+        const ratingData = await ratingService.getCourseAverageRating(course.Id)
+        return {
+          ...course,
+          averageRating: ratingData.average,
+          ratingCount: ratingData.count
+        }
+      })
+    )
+    
+    return coursesWithRatings
   },
 
 async getAllWithProgress(userId = 1) {
@@ -14,33 +32,58 @@ async getAllWithProgress(userId = 1) {
     const courses = [...coursesData]
     const userProgress = await progressService.getUserProgress(userId)
     
-    return courses.map(course => {
-      const progress = userProgress.find(p => p.courseId === course.Id)
-      return {
-        ...course,
-        progress: progress || null
-      }
-    })
+    // Add both progress and rating data
+    const coursesWithData = await Promise.all(
+      courses.map(async (course) => {
+        const progress = userProgress.find(p => p.courseId === course.Id)
+        const ratingData = await ratingService.getCourseAverageRating(course.Id)
+        
+        return {
+          ...course,
+          progress: progress || null,
+          averageRating: ratingData.average,
+          ratingCount: ratingData.count
+        }
+      })
+    )
+    
+    return coursesWithData
   },
 
-  async getById(id) {
+async getById(id) {
     await delay(250)
     const course = coursesData.find(course => course.Id === id)
     if (!course) {
       throw new Error("Course not found")
     }
-    return { ...course }
+    
+    // Add rating data
+    const ratingData = await ratingService.getCourseAverageRating(id)
+    
+    return { 
+      ...course,
+      averageRating: ratingData.average,
+      ratingCount: ratingData.count
+    }
   },
 
   async getByIdWithProgress(id, userId = 1) {
-    await delay(300)
+await delay(300)
     const course = coursesData.find(course => course.Id === id)
     if (!course) {
       throw new Error("Course not found")
     }
     
     const progress = await progressService.getCourseProgress(userId, id)
-    const courseWithProgress = { ...course }
+    const ratingData = await ratingService.getCourseAverageRating(id)
+    const userRating = await ratingService.getUserRating(userId, id)
+    
+    const courseWithProgress = { 
+      ...course,
+      averageRating: ratingData.average,
+      ratingCount: ratingData.count,
+      userRating: userRating ? userRating.rating : null
+    }
     
     if (progress) {
       courseWithProgress.lessons = course.lessons?.map(lesson => ({
@@ -149,7 +192,23 @@ async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
         lastAccessed: progress ? progress.lastAccessed : new Date(),
         completedLessons: progress ? progress.completedLessons.length : 0,
         progressData: progress
-      }
+}
     })
+  },
+
+  // Rating methods
+  async rateChapter(userId, courseId, rating) {
+    await delay(300)
+    return await ratingService.createRating(userId, courseId, rating)
+  },
+
+  async updateRating(userId, courseId, rating) {
+    await delay(250)
+    return await ratingService.updateRating(userId, courseId, rating)
+  },
+
+  async deleteRating(userId, courseId) {
+    await delay(200)
+    return await ratingService.deleteRating(userId, courseId)
   }
 }
