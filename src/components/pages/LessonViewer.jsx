@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import Button from "@/components/atoms/Button"
-import Loading from "@/components/ui/Loading"
-import Error from "@/components/ui/Error"
-import ApperIcon from "@/components/ApperIcon"
-import { courseService } from "@/services/api/courseService"
-import { toast } from "react-toastify"
+import React, { useEffect, useState } from "react";
+import VideoPlayer from "@/components/molecules/VideoPlayer";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { courseService } from "@/services/api/courseService";
+import ApperIcon from "@/components/ApperIcon";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Button from "@/components/atoms/Button";
 
 const LessonViewer = () => {
   const { courseId, lessonId } = useParams()
@@ -168,27 +169,11 @@ const LessonViewer = () => {
                 )}
               </div>
             </div>
-            
-            {/* Video Player Placeholder */}
-            <div className="relative bg-gray-900 aspect-video">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <button className="flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all duration-200">
-                  <ApperIcon name="Play" size={32} />
-                </button>
-              </div>
-              <div className="absolute bottom-4 left-4 right-4">
-                <div className="bg-black/50 backdrop-blur-sm rounded-lg p-3 text-white">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Video content would be loaded here</span>
-                    <div className="flex items-center space-x-2">
-                      <ApperIcon name="Volume2" size={16} />
-                      <ApperIcon name="Settings" size={16} />
-                      <ApperIcon name="Maximize" size={16} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+{/* Video Player */}
+            <VideoPlayer 
+              lessonTitle={currentLesson?.title}
+              className="rounded-lg shadow-sm"
+            />
             
             {/* Lesson Content */}
             <div className="p-8">
