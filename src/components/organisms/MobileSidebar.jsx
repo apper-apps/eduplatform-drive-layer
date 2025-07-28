@@ -3,7 +3,7 @@ import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
 
 const MobileSidebar = ({ isOpen, onClose, className }) => {
-  const navigationItems = [
+const navigationItems = [
     {
       name: "Courses",
       path: "/courses",
@@ -13,6 +13,11 @@ const MobileSidebar = ({ isOpen, onClose, className }) => {
       name: "My Learning",
       path: "/my-learning", 
       icon: "User"
+    },
+    {
+      name: "Bookmarked",
+      path: "/bookmarked",
+      icon: "Heart"
     },
     {
       name: "Browse",

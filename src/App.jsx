@@ -4,6 +4,7 @@ import Layout from "@/components/organisms/Layout"
 import CourseCatalog from "@/components/pages/CourseCatalog"
 import MyLearning from "@/components/pages/MyLearning"
 import Browse from "@/components/pages/Browse"
+import Bookmarked from "@/components/pages/Bookmarked"
 import CourseDetail from "@/components/pages/CourseDetail"
 import LessonViewer from "@/components/pages/LessonViewer"
 
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<CourseCatalog />} />
             <Route path="/courses" element={<CourseCatalog />} />
             <Route path="/my-learning" element={<MyLearning />} />
+            <Route path="/bookmarked" element={<Bookmarked />} />
             <Route path="/browse" element={<Browse />} />
             <Route path="/course/:courseId" element={<CourseDetail />} />
             <Route path="/course/:courseId/lesson/:lessonId" element={<LessonViewer />} />

@@ -1,34 +1,40 @@
 import coursesData from "@/services/mockData/courses.json";
+import { bookmarkService } from "@/services/api/bookmarkService";
+import React from "react";
 import { ratingService } from "@/services/api/ratingService";
 import { progressService } from "@/services/api/progressService";
+import Error from "@/components/ui/Error";
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 export const courseService = {
-async getAll() {
+  async getAll() {
     await delay(300)
     const courses = [...coursesData]
+    const bookmarkedIds = await bookmarkService.getAll()
     
-    // Add rating data to each course
-    const coursesWithRatings = await Promise.all(
+    // Add rating and bookmark data to each course
+    const coursesWithData = await Promise.all(
       courses.map(async (course) => {
         const ratingData = await ratingService.getCourseAverageRating(course.Id)
         return {
           ...course,
           averageRating: ratingData.average,
-          ratingCount: ratingData.count
+          ratingCount: ratingData.count,
+          isBookmarked: bookmarkedIds.includes(course.Id)
         }
       })
     )
     
-    return coursesWithRatings
+    return coursesWithData
   },
 
 async getAllWithProgress(userId = 1) {
     await delay(350)
     const courses = [...coursesData]
     const userProgress = await progressService.getUserProgress(userId)
+    const bookmarkedIds = await bookmarkService.getAll()
     
-    // Add both progress and rating data
+    // Add progress, rating, and bookmark data
     const coursesWithData = await Promise.all(
       courses.map(async (course) => {
         const progress = userProgress.find(p => p.courseId === course.Id)
@@ -38,7 +44,8 @@ async getAllWithProgress(userId = 1) {
           ...course,
           progress: progress || null,
           averageRating: ratingData.average,
-          ratingCount: ratingData.count
+          ratingCount: ratingData.count,
+          isBookmarked: bookmarkedIds.includes(course.Id)
         }
       })
     )
@@ -53,18 +60,20 @@ async getById(id) {
       throw new Error("Course not found")
     }
     
-    // Add rating data
+    // Add rating and bookmark data
     const ratingData = await ratingService.getCourseAverageRating(id)
+    const isBookmarked = await bookmarkService.isBookmarked(id)
     
     return { 
       ...course,
       averageRating: ratingData.average,
-      ratingCount: ratingData.count
+      ratingCount: ratingData.count,
+      isBookmarked
+isBookmarked
     }
   },
 
   async getByIdWithProgress(id, userId = 1) {
-await delay(300)
     const course = coursesData.find(course => course.Id === id)
     if (!course) {
       throw new Error("Course not found")
@@ -73,12 +82,14 @@ await delay(300)
     const progress = await progressService.getCourseProgress(userId, id)
     const ratingData = await ratingService.getCourseAverageRating(id)
     const userRating = await ratingService.getUserRating(userId, id)
+    const isBookmarked = await bookmarkService.isBookmarked(id)
     
     const courseWithProgress = { 
       ...course,
       averageRating: ratingData.average,
       ratingCount: ratingData.count,
-      userRating: userRating ? userRating.rating : null
+      userRating: userRating ? userRating.rating : null,
+      isBookmarked
     }
     
     if (progress) {
@@ -90,6 +101,58 @@ await delay(300)
     }
     
     return courseWithProgress
+  },
+
+  async getBookmarkedCourses() {
+    await delay(300)
+    const bookmarkedIds = await bookmarkService.getBookmarkedCourses()
+    const courses = [...coursesData]
+    const bookmarkedCourses = courses.filter(course => bookmarkedIds.includes(course.Id))
+    
+    // Add rating and bookmark data
+    const coursesWithData = await Promise.all(
+      bookmarkedCourses.map(async (course) => {
+        const ratingData = await ratingService.getCourseAverageRating(course.Id)
+        return {
+          ...course,
+          averageRating: ratingData.average,
+          ratingCount: ratingData.count,
+          isBookmarked: true
+        }
+      })
+    )
+    
+    return coursesWithData
+  },
+
+  async getEnrolledCourses(userId = 1) {
+    await delay(300)
+    const userProgress = await progressService.getUserProgress(userId)
+    const enrolledCourseIds = userProgress.map(p => p.courseId)
+    const courses = [...coursesData]
+    const enrolledCourses = courses.filter(course => enrolledCourseIds.includes(course.Id))
+    const bookmarkedIds = await bookmarkService.getAll()
+    
+    // Add progress, rating, and bookmark data
+    const coursesWithData = await Promise.all(
+      enrolledCourses.map(async (course) => {
+        const progress = userProgress.find(p => p.courseId === course.Id)
+        const ratingData = await ratingService.getCourseAverageRating(course.Id)
+        
+        return {
+          ...course,
+          progress: progress ? Math.round((progress.completedLessons.length / (course.lessons?.length || 1)) * 100) : 0,
+          progressData: progress,
+          completedLessons: progress ? progress.completedLessons.length : 0,
+          lastAccessed: progress ? progress.lastAccessed : new Date().toISOString(),
+          averageRating: ratingData.average,
+          ratingCount: ratingData.count,
+          isBookmarked: bookmarkedIds.includes(course.Id)
+        }
+      })
+    )
+    
+return coursesWithData
   },
 
   async create(courseData) {
@@ -144,11 +207,11 @@ async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
     progress.progressPercentage = await progressService.calculateCourseProgress(userId, courseId, totalLessons)
     
     return progress
+return progress
   },
 
   // Enrollment management methods
   async enroll(courseId, userId = 1) {
-    await delay(300)
     const course = coursesData.find(c => c.Id === courseId)
     if (!course) {
       throw new Error("Course not found")
@@ -170,11 +233,11 @@ async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
   async checkEnrollment(courseId, userId = 1) {
     await delay(200)
     return await progressService.isEnrolled(userId, courseId)
+return await progressService.isEnrolled(userId, courseId)
   },
 
-  async getEnrolledCourses(userId = 1) {
+  async getCourseEnrollments(userId = 1) {
     await delay(350)
-    const enrolledCourseIds = await progressService.getEnrolledCourses(userId)
     const enrolledCourses = coursesData.filter(course => enrolledCourseIds.includes(course.Id))
     
     // Get progress data for enrolled courses
@@ -186,9 +249,9 @@ async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
         ...course,
         progress: progress ? progress.progressPercentage : 0,
         lastAccessed: progress ? progress.lastAccessed : new Date(),
-        completedLessons: progress ? progress.completedLessons.length : 0,
+completedLessons: progress ? progress.completedLessons.length : 0,
         progressData: progress
-}
+      }
     })
   },
 

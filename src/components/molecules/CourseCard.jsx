@@ -4,6 +4,8 @@ import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
 import StarRating from "@/components/atoms/StarRating"
 import Badge from "@/components/atoms/Badge"
+import { bookmarkService } from "@/services/api/bookmarkService"
+import { toast } from "react-toastify"
 
 const CourseCard = ({ course, className, progress = null }) => {
   const [imageError, setImageError] = useState(false)
@@ -22,11 +24,31 @@ const CourseCard = ({ course, className, progress = null }) => {
 
   const handleImageLoad = () => {
     setImageLoading(false)
+}
+
+  // Bookmark functionality
+  const [isBookmarked, setIsBookmarked] = useState(course.isBookmarked || false)
+  const [bookmarkLoading, setBookmarkLoading] = useState(false)
+
+  const handleBookmarkToggle = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    setBookmarkLoading(true)
+    try {
+      const result = await bookmarkService.toggle(course.Id)
+      setIsBookmarked(result.isBookmarked)
+      toast.success(result.message)
+    } catch (error) {
+      toast.error("Failed to update bookmark. Please try again.")
+    } finally {
+      setBookmarkLoading(false)
+    }
   }
 
   // Fallback placeholder based on course category
   const getCategoryIcon = (category) => {
-const iconMap = {
+    const iconMap = {
       "Programming": "Code",
       "Business": "Briefcase",
       "Design": "Palette", 
@@ -35,7 +57,6 @@ const iconMap = {
     }
     return iconMap[category] || "BookOpen"
   }
-  
   return (
     <Link 
       to={`/course/${course.Id}`}
@@ -81,7 +102,28 @@ const iconMap = {
             </div>
           </div>
         )}
-        <div className="absolute top-4 right-4">
+<div className="absolute top-4 right-4 flex items-center space-x-2">
+          <button
+            onClick={handleBookmarkToggle}
+            disabled={bookmarkLoading}
+            className={cn(
+              "p-2 rounded-full transition-all duration-200 hover:scale-110",
+              "bg-white/90 hover:bg-white shadow-lg hover:shadow-xl",
+              bookmarkLoading && "opacity-50 cursor-not-allowed"
+            )}
+            title={isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"}
+          >
+            <ApperIcon 
+              name="Heart" 
+              size={20} 
+              className={cn(
+                "transition-all duration-200",
+                isBookmarked 
+                  ? "text-red-500 fill-red-500" 
+                  : "text-gray-500 hover:text-red-500"
+              )}
+            />
+          </button>
           <Badge variant={difficultyColors[course.difficulty] || "default"}>
             {course.difficulty}
           </Badge>
