@@ -19,18 +19,8 @@ const loadEnrolledCourses = async () => {
     try {
       setLoading(true)
       setError("")
-      // Get courses with actual progress data
-      const coursesWithProgress = await courseService.getAllWithProgress(1)
-      // Filter to only enrolled courses (those with progress data)
-      const enrolled = coursesWithProgress
-        .filter(course => course.progress && course.progress.completedLessons.length > 0)
-        .map(course => ({
-          ...course,
-          progress: course.progress.progressPercentage,
-          lastAccessed: course.progress.lastAccessed,
-          completedLessons: course.progress.completedLessons.length,
-          progressData: course.progress
-        }))
+      // Get only enrolled courses
+      const enrolled = await courseService.getEnrolledCourses(1)
       setEnrolledCourses(enrolled)
     } catch (err) {
       setError("Failed to load your learning progress. Please try again.")

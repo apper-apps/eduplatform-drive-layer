@@ -1,4 +1,15 @@
 // Mock user progress data - simulates user-specific lesson completion tracking
+// Mock enrollment data - tracks which users are enrolled in which courses
+const mockEnrollments = [
+  { userId: 1, courseId: 1, enrolledAt: new Date('2024-01-15') },
+  { userId: 1, courseId: 2, enrolledAt: new Date('2024-01-20') },
+  { userId: 1, courseId: 3, enrolledAt: new Date('2024-01-10') }
+]
+
+// Helper function to add delay for realistic API behavior
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
 const mockUserProgress = [
   {
     userId: 1, // Simulating current user ID

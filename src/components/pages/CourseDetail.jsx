@@ -17,14 +17,15 @@ const CourseDetail = () => {
   const [error, setError] = useState("")
   const [isEnrolled, setIsEnrolled] = useState(false)
   
-  const loadCourse = async () => {
+const loadCourse = async () => {
     try {
       setLoading(true)
       setError("")
       const data = await courseService.getById(parseInt(courseId))
       setCourse(data)
-      // Simulate enrollment check
-      setIsEnrolled(Math.random() > 0.5)
+      // Check actual enrollment status
+      const enrollmentStatus = await courseService.checkEnrollment(parseInt(courseId))
+      setIsEnrolled(enrollmentStatus)
     } catch (err) {
       setError("Failed to load course details. Please try again.")
     } finally {
@@ -36,13 +37,28 @@ const CourseDetail = () => {
     loadCourse()
   }, [courseId])
   
-  const handleEnrollment = () => {
+const handleEnrollment = async () => {
     if (isEnrolled) {
       toast.success("Continuing your learning journey!")
       navigate(`/course/${courseId}/lesson/${course.lessons[0].Id}`)
     } else {
-      setIsEnrolled(true)
-      toast.success("Successfully enrolled in the course!")
+      try {
+        await courseService.enroll(parseInt(courseId))
+        setIsEnrolled(true)
+        toast.success("Successfully enrolled in the course!")
+      } catch (err) {
+        toast.error("Failed to enroll in course. Please try again.")
+      }
+    }
+  }
+
+  const handleUnenroll = async () => {
+    try {
+      await courseService.unenroll(parseInt(courseId))
+      setIsEnrolled(false)
+      toast.success("Successfully unenrolled from the course.")
+    } catch (err) {
+      toast.error("Failed to unenroll from course. Please try again.")
     }
   }
   
@@ -159,17 +175,33 @@ const CourseDetail = () => {
               </div>
             )}
             
-            <Button
-              onClick={handleEnrollment}
-              className="bg-white text-primary-600 hover:bg-gray-50 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold px-8 py-3"
-            >
-              <ApperIcon 
-                name={isEnrolled ? "Play" : "Plus"} 
-                size={20} 
-                className="mr-2" 
-              />
-              {isEnrolled ? "Continue Learning" : "Enroll Now"}
-            </Button>
+<div className="flex gap-3">
+              <Button
+                onClick={handleEnrollment}
+                className="bg-white text-primary-600 hover:bg-gray-50 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold px-8 py-3"
+              >
+                <ApperIcon 
+                  name={isEnrolled ? "Play" : "Plus"} 
+                  size={20} 
+                  className="mr-2" 
+                />
+                {isEnrolled ? "Continue Learning" : "Enroll Now"}
+              </Button>
+              {isEnrolled && (
+                <Button
+                  onClick={handleUnenroll}
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-primary-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 font-semibold px-6 py-3"
+                >
+                  <ApperIcon 
+                    name="UserMinus" 
+                    size={20} 
+                    className="mr-2" 
+                  />
+                  Unenroll
+                </Button>
+              )}
+            </div>
           </div>
           
           <div className="relative">

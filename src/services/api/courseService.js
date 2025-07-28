@@ -85,7 +85,7 @@ async getAllWithProgress(userId = 1) {
     return { ...deletedCourse }
   },
 
-  async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
+async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
     await delay(200)
     const course = coursesData.find(c => c.Id === courseId)
     if (!course) {
@@ -105,5 +105,51 @@ async getAllWithProgress(userId = 1) {
     progress.progressPercentage = await progressService.calculateCourseProgress(userId, courseId, totalLessons)
     
     return progress
+  },
+
+  // Enrollment management methods
+  async enroll(courseId, userId = 1) {
+    await delay(300)
+    const course = coursesData.find(c => c.Id === courseId)
+    if (!course) {
+      throw new Error("Course not found")
+    }
+    
+    return await progressService.enrollUser(userId, courseId)
+  },
+
+  async unenroll(courseId, userId = 1) {
+    await delay(300)
+    const course = coursesData.find(c => c.Id === courseId)
+    if (!course) {
+      throw new Error("Course not found")
+    }
+    
+    return await progressService.unenrollUser(userId, courseId)
+  },
+
+  async checkEnrollment(courseId, userId = 1) {
+    await delay(200)
+    return await progressService.isEnrolled(userId, courseId)
+  },
+
+  async getEnrolledCourses(userId = 1) {
+    await delay(350)
+    const enrolledCourseIds = await progressService.getEnrolledCourses(userId)
+    const enrolledCourses = coursesData.filter(course => enrolledCourseIds.includes(course.Id))
+    
+    // Get progress data for enrolled courses
+    const userProgress = await progressService.getUserProgress(userId)
+    
+    return enrolledCourses.map(course => {
+      const progress = userProgress.find(p => p.courseId === course.Id)
+      return {
+        ...course,
+        progress: progress ? progress.progressPercentage : 0,
+        lastAccessed: progress ? progress.lastAccessed : new Date(),
+        completedLessons: progress ? progress.completedLessons.length : 0,
+        progressData: progress
+      }
+    })
   }
 }
