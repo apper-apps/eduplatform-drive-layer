@@ -1,4 +1,5 @@
 import coursesData from "@/services/mockData/courses.json"
+import { progressService } from "./progressService"
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -8,6 +9,20 @@ export const courseService = {
     return [...coursesData]
   },
 
+  async getAllWithProgress(userId = 1) {
+    await delay(350)
+    const courses = [...coursesData]
+    const userProgress = await progressService.getUserProgress(userId)
+    
+    return courses.map(course => {
+      const progress = userProgress.find(p => p.courseId === course.Id)
+      return {
+        ...course,
+        progress: progress || null
+      }
+    })
+  },
+
   async getById(id) {
     await delay(250)
     const course = coursesData.find(course => course.Id === id)
@@ -15,6 +30,27 @@ export const courseService = {
       throw new Error("Course not found")
     }
     return { ...course }
+  },
+
+  async getByIdWithProgress(id, userId = 1) {
+    await delay(300)
+    const course = coursesData.find(course => course.Id === id)
+    if (!course) {
+      throw new Error("Course not found")
+    }
+    
+    const progress = await progressService.getCourseProgress(userId, id)
+    const courseWithProgress = { ...course }
+    
+    if (progress) {
+      courseWithProgress.lessons = course.lessons?.map(lesson => ({
+        ...lesson,
+        completed: progress.completedLessons.includes(lesson.Id)
+      })) || []
+      courseWithProgress.progress = progress
+    }
+    
+    return courseWithProgress
   },
 
   async create(courseData) {
@@ -47,5 +83,27 @@ export const courseService = {
     }
     const deletedCourse = coursesData.splice(index, 1)[0]
     return { ...deletedCourse }
+  },
+
+  async updateLessonProgress(courseId, lessonId, completed, userId = 1) {
+    await delay(200)
+    const course = coursesData.find(c => c.Id === courseId)
+    if (!course) {
+      throw new Error("Course not found")
+    }
+    
+    const lesson = course.lessons?.find(l => l.Id === lessonId)
+    if (!lesson) {
+      throw new Error("Lesson not found")
+    }
+    
+    // Update progress service
+    const progress = await progressService.updateLessonProgress(userId, courseId, lessonId, completed)
+    
+    // Calculate new progress percentage
+    const totalLessons = course.lessons?.length || 0
+    progress.progressPercentage = await progressService.calculateCourseProgress(userId, courseId, totalLessons)
+    
+    return progress
   }
 }

@@ -11,7 +11,8 @@ import { courseService } from "@/services/api/courseService"
 const CourseCatalog = () => {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+const [error, setError] = useState("")
+  const [coursesWithProgress, setCoursesWithProgress] = useState([])
   const [filter, setFilter] = useState("all")
   const navigate = useNavigate()
   
@@ -19,8 +20,9 @@ const CourseCatalog = () => {
     try {
       setLoading(true)
       setError("")
-      const data = await courseService.getAll()
+const data = await courseService.getAllWithProgress()
       setCourses(data)
+      setCoursesWithProgress(data)
     } catch (err) {
       setError("Failed to load courses. Please try again.")
     } finally {
@@ -160,9 +162,13 @@ const CourseCatalog = () => {
           icon="Search"
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCourses.map((course) => (
-            <CourseCard key={course.Id} course={course} />
+            <CourseCard 
+              key={course.Id} 
+              course={course} 
+              progress={course.progress}
+            />
           ))}
         </div>
       )}

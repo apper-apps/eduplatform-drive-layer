@@ -4,7 +4,7 @@ import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
 import Badge from "@/components/atoms/Badge"
 
-const CourseCard = ({ course, className }) => {
+const CourseCard = ({ course, className, progress = null }) => {
   const [imageError, setImageError] = useState(false)
   const [imageLoading, setImageLoading] = useState(true)
   
@@ -107,20 +107,45 @@ const CourseCard = ({ course, className }) => {
           </div>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-sm text-gray-500">
-            <ApperIcon name="BookOpen" size={16} className="mr-1" />
-            <span>{course.lessons?.length || 0} lessons</span>
+<div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center text-sm text-gray-500">
+              <ApperIcon name="BookOpen" size={16} className="mr-1" />
+              <span>{course.lessons?.length || 0} lessons</span>
+            </div>
+            
+            <div className="flex items-center text-primary-600 group-hover:text-primary-700 font-medium">
+              <span className="mr-1">View Course</span>
+              <ApperIcon 
+                name="ArrowRight" 
+                size={16} 
+                className="group-hover:translate-x-1 transition-transform duration-200"
+              />
+            </div>
           </div>
           
-          <div className="flex items-center text-primary-600 group-hover:text-primary-700 font-medium">
-            <span className="mr-1">View Course</span>
-            <ApperIcon 
-              name="ArrowRight" 
-              size={16} 
-              className="group-hover:translate-x-1 transition-transform duration-200"
-            />
-          </div>
+          {progress && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-600 font-medium">Progress</span>
+                <span className="text-gray-700 font-semibold">{progress.progressPercentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500 ease-out"
+                  style={{ width: `${progress.progressPercentage}%` }}
+                ></div>
+              </div>
+              <div className="flex items-center justify-between text-xs text-gray-500">
+                <span>{progress.completedLessons?.length || 0} of {course.lessons?.length || 0} completed</span>
+                {progress.lastAccessed && (
+                  <span>
+                    Last: {Math.floor((Date.now() - new Date(progress.lastAccessed)) / (1000 * 60 * 60 * 24))}d ago
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Link>
