@@ -6,10 +6,6 @@ const mockEnrollments = [
   { userId: 1, courseId: 3, enrolledAt: new Date('2024-01-10') }
 ]
 
-// Helper function to add delay for realistic API behavior
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 const mockUserProgress = [
   {
     userId: 1, // Simulating current user ID
@@ -34,6 +30,7 @@ const mockUserProgress = [
   }
 ]
 
+// Helper function to add delay for realistic API behavior
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 export const progressService = {
@@ -105,5 +102,53 @@ async markLessonIncomplete(userId = 1, courseId, lessonId) {
       courseId: progress.courseId,
       progress: { ...progress }
     }))
+  },
+// Enrollment management functions
+  async enrollUser(userId = 1, courseId) {
+    await delay(250)
+    const existingEnrollment = mockEnrollments.find(e => e.userId === userId && e.courseId === courseId)
+    
+    if (existingEnrollment) {
+      return { success: true, message: "Already enrolled" }
+    }
+    
+    mockEnrollments.push({
+      userId,
+      courseId,
+      enrolledAt: new Date()
+    })
+    
+    return { success: true, message: "Successfully enrolled" }
+  },
+
+  async unenrollUser(userId = 1, courseId) {
+    await delay(250)
+    const enrollmentIndex = mockEnrollments.findIndex(e => e.userId === userId && e.courseId === courseId)
+    
+    if (enrollmentIndex === -1) {
+      throw new Error("Not enrolled in this course")
+    }
+    
+    mockEnrollments.splice(enrollmentIndex, 1)
+    
+    // Also remove progress data when unenrolling
+    const progressIndex = mockUserProgress.findIndex(p => p.userId === userId && p.courseId === courseId)
+    if (progressIndex !== -1) {
+      mockUserProgress.splice(progressIndex, 1)
+    }
+    
+    return { success: true, message: "Successfully unenrolled" }
+  },
+
+  async isEnrolled(userId = 1, courseId) {
+    await delay(150)
+    return mockEnrollments.some(e => e.userId === userId && e.courseId === courseId)
+  },
+
+  async getEnrolledCourses(userId = 1) {
+    await delay(200)
+    return mockEnrollments
+      .filter(e => e.userId === userId)
+      .map(e => e.courseId)
   }
 }
