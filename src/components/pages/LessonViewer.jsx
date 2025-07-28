@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import VideoPlayer from "@/components/molecules/VideoPlayer";
+import Quiz from "@/components/molecules/Quiz";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { courseService } from "@/services/api/courseService";
@@ -47,7 +48,7 @@ const loadCourseAndLesson = async () => {
     loadCourseAndLesson()
   }, [courseId, lessonId])
   
-  const handleMarkComplete = () => {
+const handleMarkComplete = () => {
     if (currentLesson && !currentLesson.completed) {
       // Update lesson completion status
       const updatedLesson = { ...currentLesson, completed: true }
@@ -59,7 +60,11 @@ const loadCourseAndLesson = async () => {
       )
       setCourse({ ...course, lessons: updatedLessons })
       
-      toast.success("Lesson marked as complete!")
+      // Show appropriate completion message based on lesson type
+      const completionMessage = currentLesson.type === 'quiz' 
+        ? "Quiz completed successfully!" 
+        : "Lesson marked as complete!";
+      toast.success(completionMessage);
     }
   }
   
@@ -193,39 +198,11 @@ const loadCourseAndLesson = async () => {
               />
             )}
 
-            {currentLesson.type === 'quiz' && (
-              <div className="p-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-b border-yellow-200">
-                <div className="flex items-center justify-center mb-6">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
-                    <ApperIcon name="HelpCircle" size={32} />
-                  </div>
-                </div>
-                <div className="text-center">
-                  <h2 className="text-2xl font-display font-bold text-gray-900 mb-2">Quiz Time!</h2>
-                  <p className="text-gray-600 mb-6">Test your knowledge with this interactive quiz</p>
-                  
-                  <div className="bg-white rounded-lg p-6 shadow-md">
-                    <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Sample Question:</h3>
-                      <p className="text-gray-700 mb-4">What is the main benefit of using React components?</p>
-                      
-                      <div className="space-y-2">
-                        {['Reusability and modularity', 'Faster loading times', 'Better SEO optimization', 'Smaller file sizes'].map((option, index) => (
-                          <button
-                            key={index}
-                            className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200 group"
-                          >
-                            <div className="flex items-center">
-                              <div className="w-4 h-4 rounded-full border-2 border-gray-300 mr-3 group-hover:border-primary-500"></div>
-                              <span className="text-gray-700 group-hover:text-primary-700">{option}</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+{currentLesson.type === 'quiz' && (
+              <Quiz 
+                lesson={currentLesson} 
+                onComplete={handleMarkComplete}
+              />
             )}
             
             {/* Lesson Content */}
