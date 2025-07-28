@@ -15,7 +15,8 @@
         "content": "Learn the basics of React and why it's popular for building user interfaces.",
         "duration": "45 min",
         "completed": false,
-        "order": 1
+        "order": 1,
+        "type": "video"
       },
       {
         "Id": 2,
@@ -23,39 +24,44 @@
         "content": "Understanding React components and JSX syntax for building dynamic UIs.",
         "duration": "60 min",
         "completed": false,
-        "order": 2
+        "order": 2,
+        "type": "text"
       },
       {
         "Id": 3,
+        "title": "Knowledge Check: React Basics",
+        "content": "Test your understanding of React fundamentals and components.",
+        "duration": "15 min",
+        "completed": false,
+        "order": 3,
+        "type": "quiz"
+      },
+      {
+        "Id": 4,
         "title": "Props and State",
         "content": "Managing component data with props and state for interactive applications.",
         "duration": "55 min",
         "completed": false,
-        "order": 3
+        "order": 4,
+        "type": "video"
       },
       {
-        "Id": 4,
+        "Id": 5,
         "title": "Event Handling",
         "content": "Handle user interactions and events in React applications.",
         "duration": "40 min",
         "completed": false,
-        "order": 4
-      },
-      {
-        "Id": 5,
-        "title": "React Hooks",
-        "content": "Modern React development with useState, useEffect, and custom hooks.",
-        "duration": "70 min",
-        "completed": false,
-        "order": 5
+        "order": 5,
+        "type": "text"
       },
       {
         "Id": 6,
-        "title": "Final Project",
-        "content": "Build a complete React application using all the concepts learned.",
-        "duration": "90 min",
+        "title": "React Hooks Deep Dive",
+        "content": "Modern React development with useState, useEffect, and custom hooks.",
+        "duration": "70 min",
         "completed": false,
-        "order": 6
+        "order": 6,
+        "type": "video"
       }
     ]
   },
@@ -75,7 +81,8 @@
         "content": "Understanding core marketing principles and digital transformation.",
         "duration": "50 min",
         "completed": false,
-        "order": 1
+        "order": 1,
+        "type": "text"
       },
       {
         "Id": 8,
@@ -83,31 +90,35 @@
         "content": "Identifying and analyzing your ideal customer segments.",
         "duration": "65 min",
         "completed": false,
-        "order": 2
+        "order": 2,
+        "type": "video"
       },
       {
         "Id": 9,
+        "title": "Marketing Strategy Quiz",
+        "content": "Assess your understanding of target audience and market research.",
+        "duration": "20 min",
+        "completed": false,
+        "order": 3,
+        "type": "quiz"
+      },
+      {
+        "Id": 10,
         "title": "Content Marketing Strategy",
         "content": "Creating compelling content that engages and converts.",
         "duration": "75 min",
         "completed": false,
-        "order": 3
-      },
-      {
-        "Id": 10,
-        "title": "Social Media Marketing",
-        "content": "Leveraging social platforms for brand awareness and engagement.",
-        "duration": "80 min",
-        "completed": false,
-        "order": 4
+        "order": 4,
+        "type": "video"
       },
       {
         "Id": 11,
-        "title": "Email Marketing Campaigns",
-        "content": "Building effective email marketing funnels and automation.",
-        "duration": "60 min",
+        "title": "Social Media Best Practices",
+        "content": "Leveraging social platforms for brand awareness and engagement.",
+        "duration": "45 min",
         "completed": false,
-        "order": 5
+        "order": 5,
+        "type": "text"
       },
       {
         "Id": 12,
@@ -115,7 +126,8 @@
         "content": "Measuring campaign performance and optimizing for better results.",
         "duration": "70 min",
         "completed": false,
-        "order": 6
+        "order": 6,
+        "type": "video"
       }
     ]
   },
@@ -135,47 +147,53 @@
         "content": "Understanding the difference between UX and UI and their importance.",
         "duration": "40 min",
         "completed": false,
-        "order": 1
+        "order": 1,
+        "type": "video"
       },
       {
         "Id": 14,
+        "title": "Design Principles Guide",
+        "content": "Core design principles including hierarchy, contrast, and balance.",
+        "duration": "30 min",
+        "completed": false,
+        "order": 2,
+        "type": "text"
+      },
+      {
+        "Id": 15,
         "title": "User Research Methods",
         "content": "Conducting effective user research to inform design decisions.",
         "duration": "65 min",
         "completed": false,
-        "order": 2
+        "order": 3,
+        "type": "video"
       },
       {
-        "Id": 15,
+        "Id": 16,
+        "title": "Design Knowledge Check",
+        "content": "Test your understanding of UX/UI principles and research methods.",
+        "duration": "25 min",
+        "completed": false,
+        "order": 4,
+        "type": "quiz"
+      },
+      {
+        "Id": 17,
         "title": "Wireframing and Prototyping",
         "content": "Creating wireframes and interactive prototypes for validation.",
         "duration": "85 min",
         "completed": false,
-        "order": 3
-      },
-      {
-        "Id": 16,
-        "title": "Visual Design Principles",
-        "content": "Color theory, typography, and layout principles for effective UI.",
-        "duration": "70 min",
-        "completed": false,
-        "order": 4
-      },
-      {
-        "Id": 17,
-        "title": "Usability Testing",
-        "content": "Testing your designs with real users and iterating based on feedback.",
-        "duration": "55 min",
-        "completed": false,
-        "order": 5
+        "order": 5,
+        "type": "video"
       },
       {
         "Id": 18,
-        "title": "Design Systems",
+        "title": "Design Systems Overview",
         "content": "Creating consistent and scalable design systems for large projects.",
-        "duration": "75 min",
+        "duration": "40 min",
         "completed": false,
-        "order": 6
+        "order": 6,
+        "type": "text"
       }
     ]
   },
@@ -195,47 +213,53 @@
         "content": "Setting up Python environment and essential libraries for data science.",
         "duration": "60 min",
         "completed": false,
-        "order": 1
+        "order": 1,
+        "type": "video"
       },
       {
         "Id": 20,
+        "title": "Python Basics Review",
+        "content": "Review essential Python concepts needed for data science.",
+        "duration": "35 min",
+        "completed": false,
+        "order": 2,
+        "type": "text"
+      },
+      {
+        "Id": 21,
+        "title": "Python Skills Assessment",
+        "content": "Test your Python knowledge before diving into data science.",
+        "duration": "30 min",
+        "completed": false,
+        "order": 3,
+        "type": "quiz"
+      },
+      {
+        "Id": 22,
         "title": "Data Manipulation with Pandas",
         "content": "Loading, cleaning, and transforming data using the Pandas library.",
         "duration": "90 min",
         "completed": false,
-        "order": 2
+        "order": 4,
+        "type": "video"
       },
       {
-        "Id": 21,
+        "Id": 23,
         "title": "Data Visualization",
         "content": "Creating compelling visualizations with Matplotlib and Seaborn.",
         "duration": "80 min",
         "completed": false,
-        "order": 3
+        "order": 5,
+        "type": "video"
       },
       {
-        "Id": 22,
-        "title": "Statistical Analysis",
-        "content": "Performing statistical analysis and hypothesis testing on datasets.",
-        "duration": "85 min",
-        "completed": false,
-        "order": 4
-      },
-      {
-        "Id": 23,
+        "Id": 24,
         "title": "Machine Learning Basics",
         "content": "Introduction to machine learning algorithms and model building.",
         "duration": "100 min",
         "completed": false,
-        "order": 5
-      },
-      {
-        "Id": 24,
-        "title": "Real-world Project",
-        "content": "Apply all learned concepts in a comprehensive data science project.",
-        "duration": "120 min",
-        "completed": false,
-        "order": 6
+        "order": 6,
+        "type": "video"
       }
     ]
   },
@@ -255,47 +279,53 @@
         "content": "Understanding the basic building blocks of life and cellular processes.",
         "duration": "75 min",
         "completed": false,
-        "order": 1
+        "order": 1,
+        "type": "video"
       },
       {
         "Id": 26,
+        "title": "Cell Biology Reading",
+        "content": "In-depth reading on cellular organelles and their functions.",
+        "duration": "45 min",
+        "completed": false,
+        "order": 2,
+        "type": "text"
+      },
+      {
+        "Id": 27,
+        "title": "Cell Biology Quiz",
+        "content": "Test your knowledge of cell structure and organelle functions.",
+        "duration": "20 min",
+        "completed": false,
+        "order": 3,
+        "type": "quiz"
+      },
+      {
+        "Id": 28,
         "title": "Genetics and DNA",
         "content": "Exploring heredity, DNA structure, and genetic inheritance patterns.",
         "duration": "85 min",
         "completed": false,
-        "order": 2
+        "order": 4,
+        "type": "video"
       },
       {
-        "Id": 27,
+        "Id": 29,
         "title": "Evolution and Natural Selection",
         "content": "Understanding how species evolve and adapt over time.",
         "duration": "70 min",
         "completed": false,
-        "order": 3
+        "order": 5,
+        "type": "text"
       },
       {
-        "Id": 28,
-        "title": "Human Body Systems",
-        "content": "Overview of major organ systems and their functions.",
-        "duration": "90 min",
-        "completed": false,
-        "order": 4
-      },
-      {
-        "Id": 29,
+        "Id": 30,
         "title": "Ecology and Ecosystems",
         "content": "Understanding relationships between organisms and their environment.",
         "duration": "80 min",
         "completed": false,
-        "order": 5
-      },
-      {
-        "Id": 30,
-        "title": "Laboratory Techniques",
-        "content": "Hands-on introduction to common biological research methods.",
-        "duration": "95 min",
-        "completed": false,
-        "order": 6
+        "order": 6,
+        "type": "video"
       }
     ]
   }

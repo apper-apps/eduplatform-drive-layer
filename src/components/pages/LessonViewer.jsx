@@ -16,7 +16,7 @@ const LessonViewer = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   
-  const loadCourseAndLesson = async () => {
+const loadCourseAndLesson = async () => {
     try {
       setLoading(true)
       setError("")
@@ -28,7 +28,14 @@ const LessonViewer = () => {
         setError("Lesson not found")
         return
       }
-      setCurrentLesson(lesson)
+      
+      // Ensure lesson has a type, default to 'video' for backward compatibility
+      const lessonWithType = {
+        ...lesson,
+        type: lesson.type || 'video'
+      }
+      
+      setCurrentLesson(lessonWithType)
     } catch (err) {
       setError("Failed to load lesson content. Please try again.")
     } finally {
@@ -142,7 +149,7 @@ const LessonViewer = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-3">
-          <div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
+<div className="bg-white rounded-xl border border-gray-200 shadow-lg overflow-hidden">
             {/* Lesson Header */}
             <div className="bg-gradient-to-r from-primary-500 to-secondary-600 p-6 text-white">
               <div className="flex items-center justify-between">
@@ -159,6 +166,14 @@ const LessonViewer = () => {
                       <ApperIcon name="BookOpen" size={16} className="mr-1" />
                       <span>Lesson {currentLesson.order}</span>
                     </div>
+                    <div className="flex items-center">
+                      <ApperIcon 
+                        name={currentLesson.type === 'video' ? 'Play' : currentLesson.type === 'text' ? 'FileText' : 'HelpCircle'} 
+                        size={16} 
+                        className="mr-1" 
+                      />
+                      <span className="capitalize">{currentLesson.type || 'Video'} Lesson</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -169,11 +184,49 @@ const LessonViewer = () => {
                 )}
               </div>
             </div>
-{/* Video Player */}
-            <VideoPlayer 
-              lessonTitle={currentLesson?.title}
-              className="rounded-lg shadow-sm"
-            />
+
+            {/* Dynamic Content Based on Lesson Type */}
+            {currentLesson.type === 'video' && (
+              <VideoPlayer 
+                lessonTitle={currentLesson?.title}
+                className="rounded-lg shadow-sm"
+              />
+            )}
+
+            {currentLesson.type === 'quiz' && (
+              <div className="p-8 bg-gradient-to-r from-yellow-50 to-orange-50 border-b border-yellow-200">
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg">
+                    <ApperIcon name="HelpCircle" size={32} />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h2 className="text-2xl font-display font-bold text-gray-900 mb-2">Quiz Time!</h2>
+                  <p className="text-gray-600 mb-6">Test your knowledge with this interactive quiz</p>
+                  
+                  <div className="bg-white rounded-lg p-6 shadow-md">
+                    <div className="mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">Sample Question:</h3>
+                      <p className="text-gray-700 mb-4">What is the main benefit of using React components?</p>
+                      
+                      <div className="space-y-2">
+                        {['Reusability and modularity', 'Faster loading times', 'Better SEO optimization', 'Smaller file sizes'].map((option, index) => (
+                          <button
+                            key={index}
+                            className="w-full text-left p-3 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-colors duration-200 group"
+                          >
+                            <div className="flex items-center">
+                              <div className="w-4 h-4 rounded-full border-2 border-gray-300 mr-3 group-hover:border-primary-500"></div>
+                              <span className="text-gray-700 group-hover:text-primary-700">{option}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Lesson Content */}
             <div className="p-8">
@@ -183,44 +236,65 @@ const LessonViewer = () => {
                     {currentLesson.content || `Welcome to "${currentLesson.title}". In this lesson, we'll explore key concepts and practical applications that will help you master this important topic.`}
                   </p>
                   
-                  <p>
-                    This comprehensive lesson covers fundamental principles and provides hands-on examples to reinforce your learning. By the end of this lesson, you'll have a solid understanding of the core concepts and be ready to apply them in real-world scenarios.
-                  </p>
-                  
-                  <h3 className="text-xl font-display font-semibold text-gray-900 mt-8 mb-4">
-                    Key Learning Objectives
-                  </h3>
-                  
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
-                      <span>Understand the fundamental concepts and terminology</span>
-                    </li>
-                    <li className="flex items-start">
-                      <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
-                      <span>Learn practical applications and best practices</span>
-                    </li>
-                    <li className="flex items-start">
-                      <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
-                      <span>Apply knowledge through hands-on exercises</span>
-                    </li>
-                    <li className="flex items-start">
-                      <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
-                      <span>Prepare for the next lesson in the sequence</span>
-                    </li>
-                  </ul>
-                  
-                  <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg p-6 border border-primary-200 mt-8">
-                    <div className="flex items-start">
-                      <ApperIcon name="Lightbulb" size={20} className="text-primary-600 mr-3 mt-1 flex-shrink-0" />
-                      <div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Pro Tip</h4>
-                        <p className="text-gray-700">
-                          Take notes as you progress through the lesson and don't hesitate to pause and replay sections that need more attention. Learning at your own pace is key to mastering new concepts.
-                        </p>
+                  {currentLesson.type !== 'quiz' && (
+                    <>
+                      <p>
+                        This comprehensive lesson covers fundamental principles and provides hands-on examples to reinforce your learning. By the end of this lesson, you'll have a solid understanding of the core concepts and be ready to apply them in real-world scenarios.
+                      </p>
+                      
+                      <h3 className="text-xl font-display font-semibold text-gray-900 mt-8 mb-4">
+                        Key Learning Objectives
+                      </h3>
+                      
+                      <ul className="space-y-2">
+                        <li className="flex items-start">
+                          <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
+                          <span>Understand the fundamental concepts and terminology</span>
+                        </li>
+                        <li className="flex items-start">
+                          <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
+                          <span>Learn practical applications and best practices</span>
+                        </li>
+                        <li className="flex items-start">
+                          <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
+                          <span>Apply knowledge through hands-on exercises</span>
+                        </li>
+                        <li className="flex items-start">
+                          <ApperIcon name="CheckCircle" size={16} className="text-emerald-600 mr-2 mt-1 flex-shrink-0" />
+                          <span>Prepare for the next lesson in the sequence</span>
+                        </li>
+                      </ul>
+                      
+                      <div className="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg p-6 border border-primary-200 mt-8">
+                        <div className="flex items-start">
+                          <ApperIcon name="Lightbulb" size={20} className="text-primary-600 mr-3 mt-1 flex-shrink-0" />
+                          <div>
+                            <h4 className="font-semibold text-gray-900 mb-2">Pro Tip</h4>
+                            <p className="text-gray-700">
+                              {currentLesson.type === 'text' 
+                                ? 'Take your time reading through the content and make notes of key concepts. Text-based lessons allow you to learn at your own pace.'
+                                : 'Take notes as you progress through the lesson and don\'t hesitate to pause and replay sections that need more attention. Learning at your own pace is key to mastering new concepts.'
+                              }
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {currentLesson.type === 'quiz' && (
+                    <div className="bg-gradient-to-r from-emerald-50 to-green-50 rounded-lg p-6 border border-emerald-200 mt-8">
+                      <div className="flex items-start">
+                        <ApperIcon name="Target" size={20} className="text-emerald-600 mr-3 mt-1 flex-shrink-0" />
+                        <div>
+                          <h4 className="font-semibold text-gray-900 mb-2">Quiz Instructions</h4>
+                          <p className="text-gray-700">
+                            Answer all questions to the best of your ability. This quiz will help reinforce the concepts you've learned in previous lessons. Take your time and think through each answer carefully.
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>

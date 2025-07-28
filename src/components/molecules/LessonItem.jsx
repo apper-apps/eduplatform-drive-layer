@@ -3,6 +3,34 @@ import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
 
 const LessonItem = ({ lesson, courseId, isActive = false, className }) => {
+  // Determine icon based on lesson type
+  const getTypeIcon = (type) => {
+    switch (type) {
+      case 'video':
+        return 'Play'
+      case 'text':
+        return 'FileText'
+      case 'quiz':
+        return 'HelpCircle'
+      default:
+        return 'Play'
+    }
+  }
+
+  // Get type label for accessibility
+  const getTypeLabel = (type) => {
+    switch (type) {
+      case 'video':
+        return 'Video Lesson'
+      case 'text':
+        return 'Text Lesson'
+      case 'quiz':
+        return 'Quiz'
+      default:
+        return 'Lesson'
+    }
+  }
+
   return (
     <Link
       to={`/course/${courseId}/lesson/${lesson.Id}`}
@@ -25,9 +53,15 @@ const LessonItem = ({ lesson, courseId, isActive = false, className }) => {
         )}>
           {lesson.title}
         </h4>
-        <div className="flex items-center text-sm text-gray-500 mt-1">
-          <ApperIcon name="Clock" size={14} className="mr-1" />
-          <span>{lesson.duration}</span>
+        <div className="flex items-center text-sm text-gray-500 mt-1 space-x-3">
+          <div className="flex items-center">
+            <ApperIcon name="Clock" size={14} className="mr-1" />
+            <span>{lesson.duration}</span>
+          </div>
+          <div className="flex items-center">
+            <ApperIcon name={getTypeIcon(lesson.type)} size={14} className="mr-1" />
+            <span>{getTypeLabel(lesson.type)}</span>
+          </div>
         </div>
       </div>
       
@@ -38,7 +72,7 @@ const LessonItem = ({ lesson, courseId, isActive = false, className }) => {
           </div>
         )}
         <ApperIcon 
-          name="Play" 
+          name={getTypeIcon(lesson.type)} 
           size={16} 
           className={cn(
             "text-gray-400 group-hover:text-primary-600 transition-colors duration-200",
