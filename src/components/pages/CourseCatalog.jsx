@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { courseService } from "@/services/api/courseService";
-import ApperIcon from "@/components/ApperIcon";
-import CourseCard from "@/components/molecules/CourseCard";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import Empty from "@/components/ui/Empty";
-import Browse from "@/components/pages/Browse";
-import Button from "@/components/atoms/Button";
-function CourseCatalog({ searchTerm = "" }) {
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import CourseCard from "@/components/molecules/CourseCard"
+import Loading from "@/components/ui/Loading"
+import Error from "@/components/ui/Error"
+import Empty from "@/components/ui/Empty"
+import Button from "@/components/atoms/Button"
+import ApperIcon from "@/components/ApperIcon"
+import { courseService } from "@/services/api/courseService"
+
+const CourseCatalog = () => {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+const [error, setError] = useState("")
   const [coursesWithProgress, setCoursesWithProgress] = useState([])
   const [filter, setFilter] = useState("all")
-  const [searchResults, setSearchResults] = useState([])
   const navigate = useNavigate()
+  
   const loadCourses = async () => {
     try {
       setLoading(true)
@@ -34,22 +34,10 @@ const data = await courseService.getAllWithProgress()
     loadCourses()
   }, [])
   
-// Search courses when searchTerm changes
-  useEffect(() => {
-    if (searchTerm.trim()) {
-      const results = courseService.search(courses, searchTerm)
-      setSearchResults(results)
-    } else {
-      setSearchResults([])
-    }
-  }, [searchTerm, courses])
-
-  const filteredCourses = searchTerm.trim() 
-    ? searchResults 
-    : courses.filter(course => {
-        if (filter === "all") return true
-        return course.category.toLowerCase() === filter.toLowerCase()
-      })
+  const filteredCourses = courses.filter(course => {
+    if (filter === "all") return true
+    return course.category.toLowerCase() === filter.toLowerCase()
+  })
   
   const categories = ["all", ...new Set(courses.map(course => course.category))]
   
@@ -165,16 +153,12 @@ const data = await courseService.getAllWithProgress()
       </div>
       
       {/* Course Grid */}
-{filteredCourses.length === 0 ? (
+      {filteredCourses.length === 0 ? (
         <Empty
           title="No courses found"
-          description={
-            searchTerm.trim() 
-              ? `No courses found for "${searchTerm}". Try a different search term.`
-              : `No courses found for "${filter}" category. Try selecting a different category.`
-          }
-          actionText={searchTerm.trim() ? "Clear Search" : "View All Courses"}
-          onAction={() => searchTerm.trim() ? window.location.reload() : setFilter("all")}
+          description={`No courses found for "${filter}" category. Try selecting a different category.`}
+          actionText="View All Courses"
+          onAction={() => setFilter("all")}
           icon="Search"
         />
       ) : (
@@ -192,4 +176,4 @@ const data = await courseService.getAllWithProgress()
   )
 }
 
-export default CourseCatalog;
+export default CourseCatalog

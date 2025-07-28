@@ -12,10 +12,9 @@ const SearchBar = ({
 }) => {
   const [localValue, setLocalValue] = useState(value || "")
   
-const handleChange = (e) => {
+  const handleChange = (e) => {
     const newValue = e.target.value
     setLocalValue(newValue)
-    // Real-time search - call onChange immediately
     if (onChange) {
       onChange(newValue)
     }

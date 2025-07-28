@@ -2,7 +2,7 @@ import { cn } from "@/utils/cn"
 import ApperIcon from "@/components/ApperIcon"
 import SearchBar from "@/components/molecules/SearchBar"
 
-const Header = ({ className, searchTerm, onSearch }) => {
+const Header = ({ className }) => {
   return (
     <header className={cn("bg-white border-b border-gray-200 shadow-sm", className)}>
       <div className="px-6 py-4">
@@ -19,11 +19,7 @@ const Header = ({ className, searchTerm, onSearch }) => {
           </div>
           
           <div className="flex-1 max-w-lg mx-8">
-            <SearchBar 
-              placeholder="Search courses, instructors, or topics..." 
-              value={searchTerm}
-              onChange={onSearch}
-            />
+            <SearchBar placeholder="Search courses, instructors, or topics..." />
           </div>
           
           <div className="flex items-center space-x-4">
