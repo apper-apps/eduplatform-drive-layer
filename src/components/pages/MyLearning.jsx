@@ -159,7 +159,7 @@ const loadEnrolledCourses = async () => {
                     </div>
                     <div className="flex items-center">
                       <ApperIcon name="CheckCircle" size={16} className="mr-2" />
-                      <span>{course.completedLessons} of {course.lessons?.length || 0} completed</span>
+                      <span>{course.completedLessons || 0} of {course.lessons?.length || 0} completed</span>
                     </div>
                   </div>
                 </div>
@@ -181,7 +181,7 @@ const loadEnrolledCourses = async () => {
                     onClick={() => {
                       // Navigate to next incomplete lesson or first lesson
                       const nextLessonId = course.lessons?.find(lesson => 
-                        !course.progressData.completedLessons.includes(lesson.Id)
+                        !course.progressData?.completedLessons?.includes(lesson.Id)
                       )?.Id || course.lessons?.[0]?.Id
                       
                       if (nextLessonId) {
