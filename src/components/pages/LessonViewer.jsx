@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import VideoPlayer from "@/components/molecules/VideoPlayer";
-import Quiz from "@/components/molecules/Quiz";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { notesService } from "@/services/api/notesService";
 import { courseService } from "@/services/api/courseService";
 import ApperIcon from "@/components/ApperIcon";
+import Quiz from "@/components/molecules/Quiz";
+import VideoPlayer from "@/components/molecules/VideoPlayer";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Button from "@/components/atoms/Button";
@@ -15,7 +16,13 @@ const LessonViewer = () => {
   const [course, setCourse] = useState(null)
   const [currentLesson, setCurrentLesson] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
+const [error, setError] = useState("")
+  const [notes, setNotes] = useState([])
+  const [notesLoading, setNotesLoading] = useState(false)
+  const [showNotes, setShowNotes] = useState(false)
+  const [newNote, setNewNote] = useState({ title: "", content: "" })
+  const [editingNote, setEditingNote] = useState(null)
+  const [searchQuery, setSearchQuery] = useState("")
   
 const loadCourseAndLesson = async () => {
     try {
@@ -44,10 +51,99 @@ const loadCourseAndLesson = async () => {
     }
   }
   
+const loadNotes = async () => {
+    if (!courseId || !lessonId) return
+    
+    try {
+      setNotesLoading(true)
+      const lessonNotes = await notesService.getByLesson(
+        parseInt(courseId), 
+        parseInt(lessonId)
+      )
+      setNotes(lessonNotes)
+    } catch (error) {
+      console.error("Failed to load notes:", error)
+      toast.error("Failed to load notes")
+    } finally {
+      setNotesLoading(false)
+    }
+  }
+
+  const handleCreateNote = async () => {
+    if (!newNote.title.trim() || !newNote.content.trim()) {
+      toast.error("Please enter both title and content")
+      return
+    }
+
+    try {
+      const createdNote = await notesService.create({
+        courseId: parseInt(courseId),
+        lessonId: parseInt(lessonId),
+        title: newNote.title,
+        content: newNote.content
+      })
+      
+      setNotes(prev => [createdNote, ...prev])
+      setNewNote({ title: "", content: "" })
+      toast.success("Note created successfully")
+    } catch (error) {
+      toast.error("Failed to create note")
+    }
+  }
+
+  const handleUpdateNote = async (noteId, updates) => {
+    try {
+      const updatedNote = await notesService.update(noteId, updates)
+      setNotes(prev => prev.map(note => 
+        note.Id === noteId ? updatedNote : note
+      ))
+      setEditingNote(null)
+      toast.success("Note updated successfully")
+    } catch (error) {
+      toast.error("Failed to update note")
+    }
+  }
+
+  const handleDeleteNote = async (noteId) => {
+    if (!window.confirm("Are you sure you want to delete this note?")) {
+      return
+    }
+
+    try {
+      await notesService.delete(noteId)
+      setNotes(prev => prev.filter(note => note.Id !== noteId))
+      toast.success("Note deleted successfully")
+    } catch (error) {
+      toast.error("Failed to delete note")
+    }
+  }
+
+  const formatRelativeTime = (timestamp) => {
+    const now = new Date()
+    const noteTime = new Date(timestamp)
+    const diffMs = now - noteTime
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffHours < 1) return "Just now"
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays < 7) return `${diffDays}d ago`
+    return noteTime.toLocaleDateString()
+  }
+
+  const filteredNotes = notes.filter(note =>
+    searchQuery === "" ||
+    note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    note.content.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   useEffect(() => {
     loadCourseAndLesson()
   }, [courseId, lessonId])
-  
+
+  useEffect(() => {
+    loadNotes()
+  }, [courseId, lessonId])
 const handleMarkComplete = () => {
     if (currentLesson && !currentLesson.completed) {
       // Update lesson completion status
@@ -85,7 +181,7 @@ const handleMarkComplete = () => {
       const previousLesson = course.lessons[currentIndex - 1]
       navigate(`/course/${courseId}/lesson/${previousLesson.Id}`)
     }
-  }
+}
   
   if (loading) {
     return (
@@ -309,7 +405,8 @@ const handleMarkComplete = () => {
         </div>
         
         {/* Sidebar - Lesson List */}
-        <div className="lg:col-span-1">
+<div className="lg:col-span-1 space-y-6">
+          {/* Course Lessons Panel */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-lg p-6 sticky top-6">
             <h3 className="font-display font-semibold text-gray-900 mb-4">Course Lessons</h3>
             <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -350,6 +447,151 @@ const handleMarkComplete = () => {
               ))}
             </div>
           </div>
+
+          {/* Notes Panel */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-lg sticky top-6">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="font-display font-semibold text-gray-900">Lesson Notes</h3>
+                <button
+                  onClick={() => setShowNotes(!showNotes)}
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <ApperIcon 
+                    name={showNotes ? "ChevronUp" : "ChevronDown"} 
+                    size={20} 
+                  />
+                </button>
+              </div>
+            </div>
+
+            {showNotes && (
+              <div className="p-6 space-y-4">
+                {/* Search Notes */}
+                <div className="relative">
+                  <ApperIcon 
+                    name="Search" 
+                    size={16} 
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search notes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  />
+                </div>
+
+                {/* Create New Note */}
+                <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
+                  <input
+                    type="text"
+                    placeholder="Note title..."
+                    value={newNote.title}
+                    onChange={(e) => setNewNote(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                  />
+                  <textarea
+                    placeholder="Write your note here..."
+                    value={newNote.content}
+                    onChange={(e) => setNewNote(prev => ({ ...prev, content: e.target.value }))}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
+                  />
+                  <button
+                    onClick={handleCreateNote}
+                    className="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+                  >
+                    Add Note
+                  </button>
+                </div>
+
+                {/* Notes List */}
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+                  {notesLoading ? (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 mx-auto"></div>
+                    </div>
+                  ) : filteredNotes.length === 0 ? (
+                    <div className="text-center py-6 text-gray-500">
+                      <ApperIcon name="FileText" size={24} className="mx-auto mb-2 text-gray-400" />
+                      <p className="text-sm">
+                        {searchQuery ? "No notes match your search" : "No notes for this lesson yet"}
+                      </p>
+                    </div>
+                  ) : (
+                    filteredNotes.map((note) => (
+                      <div key={note.Id} className="border border-gray-200 rounded-lg p-4">
+                        {editingNote === note.Id ? (
+                          <div className="space-y-3">
+                            <input
+                              type="text"
+                              value={note.title}
+                              onChange={(e) => setNotes(prev => prev.map(n => 
+                                n.Id === note.Id ? { ...n, title: e.target.value } : n
+                              ))}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm font-medium"
+                            />
+                            <textarea
+                              value={note.content}
+                              onChange={(e) => setNotes(prev => prev.map(n => 
+                                n.Id === note.Id ? { ...n, content: e.target.value } : n
+                              ))}
+                              rows={3}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm resize-none"
+                            />
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => handleUpdateNote(note.Id, { title: note.title, content: note.content })}
+                                className="flex-1 bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition-colors text-sm"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingNote(null)}
+                                className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 transition-colors text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="font-medium text-gray-900 text-sm">{note.title}</h4>
+                              <div className="flex space-x-1 ml-2">
+                                <button
+                                  onClick={() => setEditingNote(note.Id)}
+                                  className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                  <ApperIcon name="Edit2" size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteNote(note.Id)}
+                                  className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                >
+                                  <ApperIcon name="Trash2" size={14} />
+                                </button>
+                              </div>
+                            </div>
+                            <p className="text-gray-600 text-sm mb-2 leading-relaxed">{note.content}</p>
+                            <div className="flex items-center text-xs text-gray-400">
+                              <ApperIcon name="Clock" size={12} className="mr-1" />
+                              <span>{formatRelativeTime(note.timestamp)}</span>
+                              {note.lastUpdated !== note.timestamp && (
+                                <span className="ml-2">• Edited {formatRelativeTime(note.lastUpdated)}</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+</div>
         </div>
       </div>
     </div>
