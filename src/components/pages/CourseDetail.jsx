@@ -28,7 +28,110 @@ const CourseDetail = () => {
     type: 'document',
     description: '',
     content: ''
+})
+
+const handleEditContent = (content) => {
+  setEditingContent(content)
+  setContentForm({
+    title: content.title || '',
+    type: content.type || 'document',
+    description: content.description || '',
+    content: content.content || ''
   })
+  setShowAddContent(true)
+}
+
+const handleDeleteContent = async (contentId) => {
+  if (!confirm('Are you sure you want to delete this content? This action cannot be undone.')) {
+    return
+  }
+  
+  try {
+    const { contentService } = await import('@/services/api/contentService')
+    await contentService.delete(contentId)
+    
+    // Update course state to remove deleted content
+    setCourse(prev => ({
+      ...prev,
+      content: prev.content.filter(item => item.Id !== contentId)
+    }))
+    
+    toast.success('Content deleted successfully!')
+  } catch (err) {
+    toast.error('Failed to delete content. Please try again.')
+  }
+}
+
+const handleCloseContentModal = () => {
+  setShowAddContent(false)
+  setEditingContent(null)
+  setContentForm({
+    title: '',
+    type: 'document',
+    description: '',
+    content: ''
+  })
+}
+
+const handleContentSubmit = async (e) => {
+  e.preventDefault()
+  
+  if (!contentForm.title.trim() || !contentForm.content.trim()) {
+    toast.error('Title and content are required.')
+    return
+  }
+
+  try {
+    setContentLoading(true)
+    const { contentService } = await import('@/services/api/contentService')
+    
+    const contentData = {
+      ...contentForm,
+      course: parseInt(courseId)
+    }
+
+    let result
+    if (editingContent) {
+      // Update existing content
+      result = await contentService.update(editingContent.Id, contentData)
+      
+      // Update course state with updated content
+      setCourse(prev => ({
+        ...prev,
+        content: prev.content.map(item => 
+          item.Id === editingContent.Id ? { ...item, ...result } : item
+        )
+      }))
+      
+      toast.success('Content updated successfully!')
+    } else {
+      // Create new content
+      result = await contentService.create(contentData)
+      
+      // Add new content to course state
+      setCourse(prev => ({
+        ...prev,
+        content: [...(prev.content || []), result]
+      }))
+      
+      toast.success('Content added successfully!')
+    }
+    
+    handleCloseContentModal()
+  } catch (err) {
+    toast.error(editingContent ? 'Failed to update content.' : 'Failed to add content.')
+  } finally {
+    setContentLoading(false)
+  }
+}
+
+const handleContentInputChange = (e) => {
+  const { name, value } = e.target
+  setContentForm(prev => ({
+    ...prev,
+    [name]: value
+  }))
+}
 const loadCourse = async () => {
     try {
       setLoading(true)
