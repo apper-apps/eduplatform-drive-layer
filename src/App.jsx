@@ -12,6 +12,8 @@ import CourseDetail from "@/components/pages/CourseDetail";
 import MyLearning from "@/components/pages/MyLearning";
 import Bookmarked from "@/components/pages/Bookmarked";
 import LessonViewer from "@/components/pages/LessonViewer";
+import AddCourse from "@/components/pages/AddCourse";
+import AddLesson from "@/components/pages/AddLesson";
 
 // Create auth context
 export const AuthContext = createContext(null);
@@ -273,7 +275,7 @@ function AppContent() {
   return (
     <AuthContext.Provider value={authMethods}>
       <div className="App">
-        {isAuthenticated ? (
+{isAuthenticated ? (
           <Layout>
             <Routes>
               <Route path="/" element={<CourseCatalog />} />
@@ -283,6 +285,8 @@ function AppContent() {
               <Route path="/browse" element={<Browse />} />
               <Route path="/course/:courseId" element={<CourseDetail />} />
               <Route path="/course/:courseId/lesson/:lessonId" element={<LessonViewer />} />
+              <Route path="/add-course" element={<AddCourse />} />
+              <Route path="/add-lesson" element={<AddLesson />} />
             </Routes>
           </Layout>
         ) : (

@@ -10,6 +10,11 @@ const navigationItems = [
       icon: "BookOpen"
     },
     {
+      name: "Add Course",
+      path: "/add-course",
+      icon: "Plus"
+    },
+    {
       name: "My Learning",
       path: "/my-learning", 
       icon: "User"
