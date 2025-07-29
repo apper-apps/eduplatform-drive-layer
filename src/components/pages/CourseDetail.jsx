@@ -23,6 +23,22 @@ const loadCourse = async () => {
       setLoading(true)
       setError("")
       const data = await courseService.getByIdWithProgress(parseInt(courseId))
+      
+      // Handle lessons field - database stores it as Text but component expects array
+      if (data && data.lessons) {
+        if (typeof data.lessons === 'string') {
+          try {
+            // Try to parse as JSON first
+            data.lessons = JSON.parse(data.lessons)
+          } catch {
+            // If not JSON, treat as comma-separated string
+            data.lessons = data.lessons.split(',').map(lesson => lesson.trim()).filter(lesson => lesson)
+          }
+        }
+      } else if (data) {
+        data.lessons = []
+      }
+      
       setCourse(data)
       setUserRating(data.userRating)
       // Check actual enrollment status
