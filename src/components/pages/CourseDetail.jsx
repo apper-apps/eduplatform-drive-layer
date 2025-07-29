@@ -97,9 +97,30 @@ const handleRatingSubmit = async (rating) => {
     }
   }
 const handleEnrollment = async () => {
-    if (isEnrolled) {
+if (isEnrolled) {
       toast.success("Continuing your learning journey!")
-      navigate(`/course/${courseId}/lesson/${course.lessons[0].Id}`)
+      
+      // Parse lessons data safely - handle both string and array formats
+      let lessonsArray = [];
+      if (course.lessons) {
+        if (typeof course.lessons === 'string') {
+          try {
+            lessonsArray = JSON.parse(course.lessons);
+          } catch (e) {
+            console.error('Failed to parse lessons data:', e);
+            lessonsArray = [];
+          }
+        } else if (Array.isArray(course.lessons)) {
+          lessonsArray = course.lessons;
+        }
+      }
+      
+      // Navigate to first lesson if available
+      if (lessonsArray && lessonsArray.length > 0 && lessonsArray[0]?.Id) {
+        navigate(`/course/${courseId}/lesson/${lessonsArray[0].Id}`)
+      } else {
+        navigate(`/course/${courseId}`)
+      }
     } else {
       try {
         await courseService.enroll(parseInt(courseId))
